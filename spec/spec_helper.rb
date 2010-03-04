@@ -13,5 +13,6 @@ end
 Micronaut.configure do |c|
   c.color_enabled = not_in_editor?
   c.filter_run :focused => true
+  c.mock_with :rr
 end
 

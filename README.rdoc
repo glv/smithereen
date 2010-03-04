@@ -1,6 +1,6 @@
 = radish
 
-Description goes here.
+Radish is a library for building Top-Down Operator Precedence parsers.
 
 == Note on Patches/Pull Requests
  

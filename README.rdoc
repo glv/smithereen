@@ -14,4 +14,4 @@ Radish is a library for building Top-Down Operator Precedence parsers.
 
 == Copyright
 
-Copyright (c) 2009 Glenn Vanderburg. See LICENSE for details.
+Copyright (c) 2009, 2010 Glenn Vanderburg. See LICENSE for details.

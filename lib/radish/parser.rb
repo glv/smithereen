@@ -29,7 +29,6 @@ module Radish
     end
     
     attr_reader :lexer
-    attr_reader :token
     
     def initialize(source_lexer)
       @lexer = source_lexer
@@ -40,7 +39,6 @@ module Radish
     end
     
     def parse
-      advance
       # TODO: use returning
       s = expression
       advance_if_looking_at END_TOKEN_TYPE
@@ -48,42 +46,46 @@ module Radish
     end
     
     def expression(rbp=0)
-      t = token
-      advance
+      t = take_token
       left = t.nud
-      while rbp < token.lbp
-        t = token
-        advance
+      while rbp < next_token.lbp
+        t = take_token
         left = t.led(left)
       end
       left
     end
     
     def advance_if_looking_at(type)
-      raise token, "Expected '#{type}'" if token.type != type
-      advance
+      raise next_token, "Expected '#{type}'" if next_token.type != type
+      take_token
     end
 
     protected
     
-    attr_writer :token
+    attr_writer :next_token
     
     def next_token
-      # TODO: This means that advance returns augmented tokens for the parser,
+      # TODO: This means that take_token returns augmented tokens for the parser,
       #       but next_token simply returns LexerTokens.  Right now that's all we
       #       need, but it feels wrong.
-      lexer.next_token
+      @next_token ||= symbolize(lexer.take_token || LexerToken.new(END_TOKEN_TYPE, ''))
     end
     
-    def advance
-      tok = lexer.take_token || LexerToken.new(END_TOKEN_TYPE, '')
-      token_module = symbol_table[tok.type]
+    def take_token
+      # TODO: use returning
+      token = next_token
+      self.next_token = nil
+      token
+    end
+    
+    def symbolize(token)
+      token_module = symbol_table[token.type]
 
-      raise tok, "Unrecognized token type from lexer" if token_module.nil?
+      raise token, "Unrecognized token type from lexer" if token_module.nil?
 
-      tok.extend(token_module)
-      tok.parser = self
-      self.token = tok
+      token.extend(token_module)
+      token.parser = self
+      token
     end
     
   end
@@ -93,7 +95,6 @@ module Radish
   #       to remind me to think about statement-oriented languages.
   class StatementParser < Parser
     def parse
-      advance
       # TODO: use returning
       s = statements  # TODO: some notion of "what's the top level we're looking for?"
       advance_if_looking_at END_TOKEN_TYPE
@@ -103,9 +104,9 @@ module Radish
     # TODO: add std to token modules somehow.
     
     def statement
-      n = token
+      n = next_token
       if n.respond_to? :std
-        advance
+        take_token
         return n.std
       end
       v = expression(0)

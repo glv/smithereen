@@ -40,7 +40,7 @@ end
 
 Rspec::Core::RakeTask.new(:rcov) do |examples|
   examples.pattern = 'spec/**/*_spec.rb'
-  examples.rcov_opts = '-Ilib -Ispec -x "/Library/Ruby/Gems,^spec/"'
+  examples.rcov_opts = '-Ilib -Ispec -x "/.rvm/,/Library/Ruby/Gems,^spec/,rspec-dev"'
   examples.rcov = true
 end
 

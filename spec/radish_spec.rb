@@ -1,4 +1,4 @@
-require 'example_helper'
+require File.dirname(__FILE__) + '/spec_helper'
 
 describe "Radish lexical analysis" do
   it "recognizes integers" do
@@ -14,6 +14,6 @@ describe "Radish lexical analysis" do
     end
     token("3_4").should == "3_4"
     token("_34").should == nil
-    token("34_").should == nil
+    token("34_").should == "34"
   end
 end

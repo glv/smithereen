@@ -1,18 +1,25 @@
 require 'rubygems'
-require 'micronaut'
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
+require File.dirname(__FILE__) + '/../rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/../rspec-dev-setup.rb')
+
+require 'rspec'
+gem 'rr'
+
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
+
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require 'radish'
-
-def not_in_editor?
-  !(ENV.has_key?('TM_MODE') || ENV.has_key?('EMACS') || ENV.has_key?('VIM'))
+def in_editor?
+  ENV.has_key?('TM_MODE') || ENV.has_key?('EMACS') || ENV.has_key?('VIM')
 end
 
-Micronaut.configure do |c|
-  c.color_enabled = not_in_editor?
+Rspec.configure do |c|
+  c.mock_framework = :rr
   c.filter_run :focused => true
-  c.mock_with :rr
+  c.run_all_when_everything_filtered = true
+  c.color_enabled = !in_editor?
+  c.alias_example_to :fit, :focused => true
+  c.profile_examples = false
+  c.formatter = :documentation # if ENV["RUN_CODE_RUN"] == "true"
+  c.include(CustomRadishMatchers)
 end
-

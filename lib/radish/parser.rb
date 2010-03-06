@@ -92,44 +92,4 @@ module Radish
     
   end
   
-  # TODO: haven't tested or really explored this yet.
-  #       Just put it in here from Crockford's JS parser
-  #       to remind me to think about statement-oriented languages.
-  class StatementParser < Parser
-    def parse
-      # TODO: use returning
-      s = statements  # TODO: some notion of "what's the top level we're looking for?"
-      advance_if_looking_at END_TOKEN_TYPE
-      s
-    end
-    
-    # TODO: add std to token modules somehow.
-    
-    def statement
-      n = next_token
-      if n.respond_to? :std
-        take_token
-        return n.std
-      end
-      v = expression(0)
-      # TODO: check for bad expression statements somehow
-      # TODO: advance over statement terminator
-    end
-    
-    # TODO: need a similar thing for expressions: a method
-    #       that just parses and gathers up a sequence of expressions.
-    def statements
-      a = []
-      loop do
-        break if token.type == :'}' || token.type == END_TOKEN_TYPE
-        s = statement
-        a << s if s
-      end
-      case a.length
-      when 0: nil
-      when 1: a[0]
-      else    a
-      end
-    end
-  end
 end

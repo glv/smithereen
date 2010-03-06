@@ -15,7 +15,7 @@ describe Radish::Parser do
     end
   
     describe "::symbol_table" do
-      it "is not be shared with subclasses" do
+      it "is not shared with subclasses" do
         Parser.symbol_table[:foo] = 'bar'
         c = Class.new(Parser)
         c.symbol_table[:baz] = 'quux'
@@ -129,7 +129,7 @@ describe Radish::Parser do
         subject.send(:extend_with_infixes, 20, :pre_expr).should == :pre_expr
       end
       
-      it "gathers an infix expression until a lower lbp is found" do
+      it "gathers infix expressions while they have higher lbps" do
         tok1 = mock! do |expect|
           expect.lbp{30}
           expect.infix(:pre_expr){:in_expr}

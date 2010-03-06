@@ -45,12 +45,14 @@ module Radish
       s
     end
     
+    # Uses prefix and infix instead of Pratt's nud and led
+    # (following suggestion from Tom Lynn here: http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017)
     def expression(rbp=0)
       t = take_token
-      left = t.nud
+      left = t.prefix
       while rbp < next_token.lbp
         t = take_token
-        left = t.led(left)
+        left = t.infix(left)
       end
       left
     end

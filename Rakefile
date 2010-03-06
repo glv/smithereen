@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'rake'
 
-require File.dirname(__FILE__) + '/rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/rspec-dev-setup.rb')
-
 # begin
 #   require 'jeweler'
 #   Jeweler::Tasks.new do |gem|
@@ -18,18 +16,6 @@ require File.dirname(__FILE__) + '/rspec-dev-setup' if File.exists?(File.dirname
 #   Jeweler::GemcutterTasks.new
 # rescue LoadError
 #   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-# end
-# 
-# require 'micronaut/rake_task'
-# Micronaut::RakeTask.new(examples) do |examples|
-#   examples.pattern = 'examples/**/*_example.rb'
-#   examples.ruby_opts << '-Ilib -Iexamples'
-# end
-# 
-# Micronaut::RakeTask.new(:rcov) do |examples|
-#   examples.pattern = 'examples/**/*_example.rb'
-#   examples.rcov_opts = '-Ilib -Iexamples'
-#   examples.rcov = true
 # end
 
 require 'rspec/core/rake_task'

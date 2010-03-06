@@ -1,11 +1,17 @@
+require 'radish/errors'
+
 module Radish
   module TokenClassMethods
-    def nud(&blk)
-      defblock :nud, &blk
+    def prefix(&blk)
+      raise ::Radish::GrammarError, "prefix blocks must not have positive arity" unless blk.arity <= 0
+      defblock :prefix, &blk
     end
     
-    def led(&blk)
-      defblock :led, &blk
+    def infix(&blk)
+      if blk.arity > 1 || blk.arity == 0
+        raise ::Radish::GrammarError, "infix blocks must have an arity either 1 or negative"
+      end
+      defblock :infix, &blk
     end
 
     protected
@@ -22,12 +28,12 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
-    def nud
-      raise "not expecting call to nud on #{self.class}"
+    def prefix
+      raise ::Radish::ParseError.new("not expecting call to prefix on #{self.class}", self)
     end
 
-    def led(left)
-      raise "not expecting call to led on #{self.class}"
+    def infix(left)
+      raise ::Radish::ParseError.new("not expecting call to infix on #{self.class}", self)
     end
     
     # TODO: use delegate

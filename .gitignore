@@ -17,6 +17,6 @@ tmtags
 coverage
 rdoc
 pkg
+.rvmrc
 
 ## PROJECT::SPECIFIC
-rspec-dev-setup.rb

@@ -1,9 +1,5 @@
 require 'rubygems'
-
-require File.dirname(__FILE__) + '/../rspec-dev-setup' if File.exists?(File.dirname(__FILE__) + '/../rspec-dev-setup.rb')
-
 require 'rspec'
-gem 'rr'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 

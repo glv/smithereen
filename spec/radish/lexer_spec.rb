@@ -3,53 +3,73 @@ require File.dirname(__FILE__) + '/../spec_helper'
 require 'radish/lexer'
 
 describe Radish::Lexer do
-  describe "whitespace and end-of-stream processing" do
-    it "returns an :(end) token for an empty source" do
-      l = Radish::Lexer.new('')
-      l.take_token.should be_nil
+  subject { Radish::Lexer.new("foo") }
+  
+  describe "newly created" do
+    it "stores the source stream as @s" do
+      subject.send(:s).should == "foo"
     end
     
-    it "skips over whitespace and returns an :(end) token for a blank source" do
-      l = Radish::Lexer.new(" \t \n \r \r\n \t  ")
-      l.take_token.should be_nil
+    it "sets @i to 0" do
+      subject.send(:i).should == 0
+    end
+    
+    it "sets @length to the length of the source stream" do
+      subject.send(:length).should == "foo".size
     end
   end
   
-  describe "integers" do
-    it "recognizes an integer as the content of the stream" do
-      l = Radish::Lexer.new('42')
-      l.take_token.should be_lexer_token(:integer, '42', 0, 2)
-      l.take_token.should be_nil
-    end
-    
-    it "recognizes an integer as the first thing in the stream" do
-      l = Radish::Lexer.new('42   ')
-      l.take_token.should be_lexer_token(:integer, '42', 0, 2)
-      l.take_token.should be_nil
-    end
-    
-    it "recognizes an integer after some whitespace" do
-      l = Radish::Lexer.new('  42   ')
-      l.take_token.should be_lexer_token(:integer, '42', 2, 4)
-      l.take_token.should be_nil
+  describe "#take_token" do
+    it "delegates to produce_next_token" do
+      mock(subject).produce_next_token {:some_token}
+      subject.take_token.should == :some_token
     end
   end
   
-  describe "+ operator" do
-    it "recognizes + as the content of the stream" do
-      l = Radish::Lexer.new('+')
-      l.take_token.should be_lexer_token(:+, '+', 0, 1)
-      l.take_token.should be_nil
+  describe "#move" do
+    it "increments @i by the supplied incr value" do
+      subject.send(:move, 2)
+      subject.send(:i).should == 2
+      subject.send(:move, 1)
+      subject.send(:i).should == 3
+    end
+    
+    it "uses 1 as the default incr value" do
+      subject.send(:move)
+      subject.send(:i).should == 1
+      subject.send(:move)
+      subject.send(:i).should == 2
     end
   end
   
-  describe "expressions" do
-    it "produces the proper tokens for a simple addition expression" do
-      l = Radish::Lexer.new('  42   +18')
-      l.take_token.should be_lexer_token(:integer, '42')
-      l.take_token.should be_lexer_token(:+, '+')
-      l.take_token.should be_lexer_token(:integer, '18') 
-      l.take_token.should be_nil
+  describe "#make_token" do
+    it "creates a token with the supplied type and text" do
+      tok = subject.send(:make_token, :foo, 'bar')
+      tok.type.should == :foo
+      tok.text.should == 'bar'
+    end
+    
+    it "uses @i as the token's 'from' value" do
+      subject.send(:i=, 2)
+      tok = subject.send(:make_token, :foo, 'bar')
+      tok.from.should == 2
+    end
+    
+    it "sets the token's 'to' to 'from' plus the supplied 'size' value" do
+      subject.send(:i=, 2)
+      tok = subject.send(:make_token, :foo, 'bar', 3)
+      tok.to.should == 5
+    end
+    
+    it "uses 'text.size' as the default 'size' value" do
+      tok = subject.send(:make_token, :foo, 'bar')
+      tok.to.should == 3
+    end
+    
+    it "moves @i by 'size'" do
+      tok = subject.send(:make_token, :foo, 'bar', 8)
+      subject.send(:i).should == 8
     end
   end
+
 end

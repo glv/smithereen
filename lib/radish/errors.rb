@@ -1,4 +1,7 @@
 module Radish
+  class GrammarError < Exception
+  end
+  
   class ParseError < Exception
     def initialize(msg, token)
       super(msg)

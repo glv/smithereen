@@ -45,16 +45,11 @@ module Radish
       s
     end
     
-    # Uses prefix and infix instead of Pratt's nud and led
+    # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led'
     # (following suggestion from Tom Lynn here: http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017)
+    
     def expression(rbp=0)
-      t = take_token
-      left = t.prefix
-      while rbp < next_token.lbp
-        t = take_token
-        left = t.infix(left)
-      end
-      left
+      extend_with_infixes(rbp, take_token.prefix)
     end
     
     def advance_if_looking_at(type)
@@ -66,10 +61,14 @@ module Radish
     
     attr_writer :next_token
     
+    def extend_with_infixes(rbp, sub_expression)
+      loop do
+        return sub_expression if rbp >= next_token.lbp
+        sub_expression = take_token.infix(sub_expression)
+      end
+    end
+    
     def next_token
-      # TODO: This means that take_token returns augmented tokens for the parser,
-      #       but next_token simply returns LexerTokens.  Right now that's all we
-      #       need, but it feels wrong.
       @next_token ||= symbolize(lexer.take_token || LexerToken.new(END_TOKEN_TYPE, ''))
     end
     
@@ -82,6 +81,7 @@ module Radish
     
     def symbolize(token)
       token_module = symbol_table[token.type]
+      puts "token: #{token.inspect}, token_module: #{token_module.inspect}"
 
       raise token, "Unrecognized token type from lexer" if token_module.nil?
 

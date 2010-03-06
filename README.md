@@ -45,6 +45,13 @@ with that code:
 3. Many of the important method names (most of which originated
    with Pratt) are poor, hindering understanding to someone who
    does not already grasp the algorithm.
+   
+A [Python implementation][python] by Fredrik Lundh is easier to
+follow simply because he starts small and builds up the pieces
+bit-by-bit, rather than presenting a full parser for a complex
+grammar right from the start.  But of course the Python style of
+implementation differs in many respects from what you would expect
+to see in Ruby.
 
 After some time, then, I decided to write a new implementation in
 Ruby.  The goal is to provide a reusable core that can be exploited
@@ -92,12 +99,14 @@ this design before committing to it for the long term.
 
 ## To do
 
+* Set up bundler and get this running on RCR.
 * Finish porting the sample JavaScript parser from Crockford's
   paper.
 * Use Cucumber to write some end-to-end tests of the example parsers.
 * Add some kind of tracing output to make it easier to understand
   (and debug) the algorithm.
 * Reusable example groups for lexers and lexer tokens.
+* Reconsider whether to hide the `left` parameter to `infix`.
 * Names to reconsider: prefix, infix, extend_with_infixes, symbolize,
   symbol_module, lexer token, take_token, deftoken.
 * Pull in activesupport v3.
@@ -125,3 +134,4 @@ Copyright (c) 2009, 2010 Glenn Vanderburg. See LICENSE for details.
 [crockford]: http://javascript.crockford.com/tdop/tdop.html
 [bc]: http://oreilly.com/catalog/9780596510046
 [pratt]: http://portal.acm.org/citation.cfm?id=512931
+[python]: http://effbot.org/zone/simple-top-down-parsing.htm

@@ -102,7 +102,6 @@ this design before committing to it for the long term.
 * Set up bundler and get this running on RCR.
 * Finish porting the sample JavaScript parser from Crockford's
   paper.
-* Use Cucumber to write some end-to-end tests of the example parsers.
 * Add some kind of tracing output to make it easier to understand
   (and debug) the algorithm.
 * Reusable example groups for lexers and lexer tokens.

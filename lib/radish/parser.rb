@@ -63,10 +63,8 @@ module Radish
     attr_writer :next_token
     
     def extend_with_infixes(rbp, sub_expression)
-      loop do
-        return sub_expression if rbp >= next_token.lbp
-        sub_expression = take_token.infix(sub_expression)
-      end
+      sub_expression = take_token.infix(sub_expression) while next_token.lbp > rbp
+      sub_expression
     end
     
     def next_token

@@ -18,6 +18,10 @@ Rspec.configure do |c|
   c.color_enabled = !in_editor?
   c.alias_example_to :fit, :focused => true
   c.profile_examples = false
-  c.formatter = :documentation # if ENV["RUN_CODE_RUN"] == "true"
+  if ENV['RUN_CODE_RUN'] == 'true'
+    c.formatter = :documentation
+  elsif ENV['RSPEC_FORMATTER']
+    c.formatter = ENV['RSPEC_FORMATTER']
+  end
   c.include(CustomRadishMatchers)
 end

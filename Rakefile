@@ -18,21 +18,30 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
-require 'rspec/core/rake_task'
-Rspec::Core::RakeTask.new(:examples) do |examples|
-  examples.pattern = 'spec/**/*_spec.rb'
-  examples.ruby_opts = '-Ilib -Ispec'
-end
+namespace :spec do
+  require 'rspec/core/rake_task'
+  Rspec::Core::RakeTask.new(:examples) do |examples|
+    examples.pattern = 'spec/**/*_spec.rb'
+    examples.ruby_opts = '-Ilib -Ispec'
+  end
 
-Rspec::Core::RakeTask.new(:rcov) do |examples|
-  examples.pattern = 'spec/**/*_spec.rb'
-  examples.rcov_opts = '-Ilib -Ispec -x "/.rvm/,/Library/Ruby/Gems,^spec/,rspec-dev"'
-  examples.rcov = true
+  desc "Chooses documentation format for RSpec output"
+  task :doc_format do |t|
+    ENV['RSPEC_FORMATTER'] = 'documentation'
+  end
+
+  Rspec::Core::RakeTask.new(:rcov) do |examples|
+    examples.pattern = 'spec/**/*_spec.rb'
+    examples.rcov_opts = '-Ilib -Ispec -x "/.rvm/,/Library/Ruby/Gems,^spec/,rspec-dev"'
+    examples.rcov = true
+  end
+  
+  task :rcov => :doc_format
 end
 
 # task :examples => :check_dependencies
 
-task :default => :examples
+task :default => 'spec:examples'
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|

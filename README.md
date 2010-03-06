@@ -23,7 +23,7 @@ promised parsers as easy to write and understand as recursive
 descent, but with much better performance and space-efficiency.
 Also, as a Rubyist, I was drawn by Crockford's claim that TDOP "is
 most effective when used in a dynamic, functional programming
-language." He goes on to say that TDOP
+language." He goes on to say that TDOP:
 
 > wants a dynamic language, but dynamic language communities
 > historically have had no use for the syntax that Pratt's technique

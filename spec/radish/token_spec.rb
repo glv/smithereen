@@ -58,7 +58,7 @@ describe Radish::TokenInstanceMethods do
     end
   end
   
-  describe "#advance_if_loooking_at" do
+  describe "#advance_if_looking_at" do
     it "delegates to parser" do
       stub(subject).parser.mock!.advance_if_looking_at(:foo)
       subject.advance_if_looking_at(:foo)

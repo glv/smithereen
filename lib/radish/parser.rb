@@ -81,7 +81,6 @@ module Radish
     
     def symbolize(token)
       token_module = symbol_table[token.type]
-      puts "token: #{token.inspect}, token_module: #{token_module.inspect}"
 
       raise token, "Unrecognized token type from lexer" if token_module.nil?
 

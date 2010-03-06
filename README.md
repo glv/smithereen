@@ -3,7 +3,7 @@
 Radish is a library for building Top-Down Operator Precedence parsers.
 
 To learn more about TDOP parsing, see
-[Doug Crockford's recent chapter][crockford] in
+[Doug Crockford's chapter][crockford] in the book
 <cite>[Beautiful Code][bc]</cite>, and
 [Vaughn Pratt's original paper][pratt].
 
@@ -71,9 +71,9 @@ distinction between expression- and statement-oriented languages.
 
 ## Design
 
-This implementation of TDOP has one distinctive design characteristic,
-the full implications of which are still unclear.  It may have to
-be changed if it proves to have too great a performance impact.
+Radish has one distinctive design characteristic, the full implications
+of which are still unclear.  It may have to be changed if it proves
+to have too great a performance impact.
 
 One interesting characteristic of TDOP is that tokens actively
 participate in the parsing process: tokens parse their own

@@ -5,7 +5,7 @@ Radish is a library for building Top-Down Operator Precedence parsers.
 To learn more about TDOP parsing, see
 [Doug Crockford's chapter][crockford] in the book
 <cite>[Beautiful Code][bc]</cite>, and
-[Vaughn Pratt's original paper][pratt].
+[Vaughan Pratt's original paper][pratt].
 
 If you're already familiar with TDOP, you will notice that I'm using
 nonstandard names for the methods that Pratt called "nud" and "led".
@@ -109,7 +109,6 @@ this design before committing to it for the long term.
 * Reconsider whether to hide the `left` parameter to `infix`.
 * Names to reconsider: prefix, infix, extend_with_infixes, symbolize,
   symbol_module, lexer token, take_token, deftoken.
-* Pull in activesupport v3.
 * Add notes and stats rake tasks.
 * Measure performance:
   * speed
@@ -122,7 +121,7 @@ this design before committing to it for the long term.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
+* Commit, do not mess with Rakefile, VERSION, or history.
   (if you want to have your own version, that is fine but bump version in a commit
   by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.

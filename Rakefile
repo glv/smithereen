@@ -1,22 +1,22 @@
 require 'rubygems'
 require 'rake'
 
-# begin
-#   require 'jeweler'
-#   Jeweler::Tasks.new do |gem|
-#     gem.name = "radish"
-#     gem.summary = %Q{TODO: one-line summary of your gem}
-#     gem.description = %Q{TODO: longer description of your gem}
-#     gem.email = "glv@vanderburg.org"
-#     gem.homepage = "http://github.com/glv/radish"
-#     gem.authors = ["Glenn Vanderburg"]
-#     gem.add_development_dependency "rspec", ">= 2"
-#     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-#   end
-#   Jeweler::GemcutterTasks.new
-# rescue LoadError
-#   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-# end
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "radish"
+    gem.summary = %Q{A library for building parsers using top-down operator precedence}
+    gem.description = %Q{A library for building parsers using top-down operator precedence}
+    gem.email = "glv@vanderburg.org"
+    gem.homepage = "http://github.com/glv/radish"
+    gem.authors = ["Glenn Vanderburg"]
+    gem.add_development_dependency "rspec", ">= 2"
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  end
+  Jeweler::GemcutterTasks.new
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+end
 
 require 'rspec/core/rake_task'
 Rspec::Core::RakeTask.new(:examples) do |examples|

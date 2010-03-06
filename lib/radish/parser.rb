@@ -49,7 +49,8 @@ module Radish
     # (following suggestion from Tom Lynn here: http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017)
     
     def expression(rbp=0)
-      extend_with_infixes(rbp, take_token.prefix)
+      start_expression = take_token.prefix
+      extend_with_infixes(rbp, start_expression)
     end
     
     def advance_if_looking_at(type)

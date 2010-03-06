@@ -87,8 +87,8 @@ the lexer.
 
 I like that design, but it's unusual even in Ruby for such things
 to be done in the inner loop of an algorithm that strives to perform
-well.  I plan to do some profiling to assess the performance impact
-of this design before committing to it for the long term.
+well.  I plan to do some profiling to assess the performance of
+this design before committing to it for the long term.
 
 ## To do
 

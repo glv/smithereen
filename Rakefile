@@ -10,7 +10,13 @@ begin
     gem.email = "glv@vanderburg.org"
     gem.homepage = "http://github.com/glv/radish"
     gem.authors = ["Glenn Vanderburg"]
-    gem.add_development_dependency "rspec", ">= 2"
+    
+    gem.add_runtime_dependency     "activesupport", ">= 3.0.0.beta1"
+    
+    gem.add_development_dependency "jeweler",       ">= 1.4.0"
+    gem.add_development_dependency "rr",            ">= 0.10.10"
+    gem.add_development_dependency "rspec",         ">= 2.0.0.a7"
+    gem.add_development_dependency "rcov",          ">= 0.9.8"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

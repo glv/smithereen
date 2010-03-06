@@ -1,3 +1,4 @@
+require 'active_support/core_ext/object/returning'
 require 'radish/token'
 
 module Radish
@@ -39,10 +40,7 @@ module Radish
     end
     
     def parse
-      # TODO: use returning
-      s = expression
-      advance_if_looking_at END_TOKEN_TYPE
-      s
+      returning(expression) { advance_if_looking_at END_TOKEN_TYPE }
     end
     
     # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led',
@@ -73,10 +71,7 @@ module Radish
     end
     
     def take_token
-      # TODO: use returning
-      token = next_token
-      self.next_token = nil
-      token
+      returning(next_token) { self.next_token = nil }
     end
     
     def symbolize(token)

@@ -1,5 +1,8 @@
 $: << File.dirname(__FILE__) + '/../lib'
 $: << File.dirname(__FILE__)
+
+require 'rubygems'
+require 'active_support/core_ext/object/returning'
 require 'radish'
 
 class ExampleLexer < Radish::Lexer
@@ -62,10 +65,7 @@ class ExampleParser < Radish::Parser
   
   deftoken :'(', 0 do
     prefix do
-      # TODO: use returning
-      expr = expression
-      advance_if_looking_at(:')')
-      expr
+      returning(expression) { advance_if_looking_at :')' }
     end
   end
   

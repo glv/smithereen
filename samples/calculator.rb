@@ -24,6 +24,8 @@ module RadishSamples
         make_token(:-, $&)
       when /\A\*/
         make_token(:*, $&)
+      when /\A\//
+        make_token(:/, $&)
       when /\A\^/
         make_token(:'^', $&)
       when /\A\(/
@@ -53,6 +55,10 @@ module RadishSamples
   
     deftoken :*, 20 do
       infix {|left| left * expression(lbp) }
+    end
+    
+    deftoken :/, 20 do
+      infix {|left| left / expression(lbp) }
     end
   
     deftoken :-, 10 do

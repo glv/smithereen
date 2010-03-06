@@ -45,8 +45,9 @@ module Radish
       s
     end
     
-    # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led'
-    # (following suggestion from Tom Lynn here: http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017)
+    # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led',
+    # following the suggestion from Tom Lynn at 
+    # http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017
     
     def expression(rbp=0)
       start_expression = take_token.prefix

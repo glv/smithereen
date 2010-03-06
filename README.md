@@ -97,6 +97,11 @@ this design before committing to it for the long term.
 * Use Cucumber to write some end-to-end tests of the example parsers.
 * Add some kind of tracing output to make it easier to understand
   (and debug) the algorithm.
+* Reusable example groups for lexers and lexer tokens.
+* Names to reconsider: prefix, infix, extend_with_infixes, symbolize,
+  symbol_module, lexer token, take_token, deftoken.
+* Pull in activesupport v3.
+* Add notes and stats rake tasks.
 * Measure performance:
   * speed
   * space

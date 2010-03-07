@@ -1,3 +1,4 @@
+require 'active_support/core_ext/module/delegation'
 require 'radish/errors'
 
 module Radish
@@ -28,6 +29,8 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
+    delegate :advance_if_looking_at, :expression, :to => :parser
+    
     def to_msg
       if type.to_s == text
         "'#{text}'"
@@ -42,16 +45,6 @@ module Radish
 
     def infix(left)
       raise ::Radish::ParseError.new("Unexpected #{to_msg}", self)
-    end
-    
-    # TODO: use delegate
-    def advance_if_looking_at(type)
-      parser.advance_if_looking_at(type)
-    end
-    
-    # TODO: use delegate
-    def expression(rbp=0)
-      parser.expression(rbp)
     end
     
     def exception(message="Parse error")

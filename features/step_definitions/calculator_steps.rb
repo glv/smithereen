@@ -4,7 +4,7 @@ Given /^I have loaded the sample calculator parser$/ do
 end
 
 Given /^I ask the calculator for the answer to "([^\"]*)"$/ do |input|
-  # Gherkin doesn't process escape sequences in strings, so ask ruby to to that:
+  # Gherkin doesn't process escape sequences in strings, so ask ruby to do that:
   calculator_input = eval(%{"#{input}"})
   begin
     @result = @parser_class.new(calculator_input).parse

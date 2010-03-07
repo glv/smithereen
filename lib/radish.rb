@@ -1,3 +1,4 @@
+require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/returning'
 require 'radish/errors'
 require 'radish/lexer_token'

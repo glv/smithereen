@@ -72,11 +72,6 @@ describe Radish::TokenInstanceMethods do
       stub(subject).parser.mock!.expression(:foo)
       subject.expression(:foo)
     end
-
-    it "delegates to parser with default lbp of 0" do
-      stub(subject).parser.mock!.expression(0)
-      subject.expression
-    end
   end
   
   describe "#exception" do

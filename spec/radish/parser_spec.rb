@@ -114,6 +114,14 @@ describe Radish::Parser do
         end
         subject.expression(20).should == :in_expr
       end
+
+      it "has a default rbp argument of 0" do
+        mock(subject) do |expect|
+          expect.take_token.mock!.prefix { :pre_expr }
+          expect.extend_with_infixes(0, :pre_expr)
+        end
+        subject.expression
+      end
     end
     
     describe "#extend_with_infixes" do

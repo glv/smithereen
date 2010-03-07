@@ -82,7 +82,7 @@ module Radish
     def symbolize(token)
       token_module = symbol_table[token.type]
 
-      raise token, "Unrecognized token type from lexer" if token_module.nil?
+      raise ParseError.new("Unrecognized token type from lexer", token) if token_module.nil?
 
       token.extend(token_module)
       token.parser = self

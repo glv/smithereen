@@ -5,6 +5,10 @@ require 'radish/parser'
 describe Radish::Parser do
   Parser = Radish::Parser
   
+  before do
+    Parser.symbol_table.clear
+  end
+  
   describe "class methods" do
   
     describe "::inherited" do
@@ -30,9 +34,17 @@ describe Radish::Parser do
   
     describe "::deftoken" do
       it "creates a new module and stores it in the symbol table" do
-        mock(Module).new{:bar}
+        mock_module = 'bar'
+        stub(mock_module).lbp = 0
+        mock(Module).new{mock_module}
         Parser.send(:deftoken, :foo, 0)
-        Parser.symbol_table[:foo].should == :bar
+        Parser.symbol_table[:foo].should == mock_module
+      end
+      
+      it "does not create a new module if a module for the type already exists" do
+        Parser.send(:deftoken, :foo, 0)
+        dont_allow(Module).new
+        Parser.send(:deftoken, :foo, 0)
       end
     
       it "extends that module with TokenClassMethods" do
@@ -60,6 +72,13 @@ describe Radish::Parser do
         o.extend Parser.symbol_table[:foo]
         o.lbp.should == 35
       end
+      
+      it "uses 0 as a default lbp value" do
+        Parser.send(:deftoken, :foo)
+        o = Object.new
+        o.extend Parser.symbol_table[:foo]
+        o.lbp.should == 0
+      end
     
       it "evals a supplied block in the module" do
         block_module = nil
@@ -68,6 +87,30 @@ describe Radish::Parser do
         end
         block_module.should == Parser.symbol_table[:foo]
       end
+      
+      it "does not create a new module if one already exists for the symbol type" do
+        Parser.send(:deftoken, :foo, 0)
+        dont_allow(Module).new
+        Parser.send(:deftoken, :foo, 0)
+      end
+      
+      it "evals a supplied block in a preexisting module" do
+        Parser.send(:deftoken, :foo, 0)
+        defined_module = Parser.symbol_table[:foo]
+        block_module = nil
+        Parser.send(:deftoken, :foo, 0) do
+          block_module = self
+        end
+        block_module.should == defined_module
+      end
+
+      it "redefines lbp on the module if the new lbp is greater than the old" do
+        Parser.send(:deftoken, :foo, 10)
+        Parser.send(:deftoken, :foo, 20)
+        o = Object.new
+        o.extend Parser.symbol_table[:foo]
+        o.lbp.should == 20
+      end      
     end
   end
   
@@ -218,30 +261,37 @@ describe Radish::Parser do
       end
     end
     
-    describe "#symbolize" do
-      it "extends the token with the module from symbol_table[token.type]" do
+    describe "#module_for_token" do
+      it "returns the module from the symbol table for type" do
         subject.symbol_table[:some_type] = :some_module
-        mock(token = 'some token') do |expect|
-          expect.type{:some_type}
-          expect.extend(:some_module)
-        end
-        stub(token).parser = subject
-        subject.send(:symbolize, token).should == token
+        subject.send(:module_for_token, :some_token, :some_type).should == :some_module
       end
       
-      it "sets the parser value on the token" do
+      it "uses token.type as the default value for type" do
         subject.symbol_table[:some_type] = :some_module
-        mock(token = 'some token').parser = subject
-        stub(token) do |replace|
-          replace.type{:some_type}
-          replace.extend
-        end
-        subject.send(:symbolize, token).should == token
+        token = mock!.type{:some_type}.subject
+        subject.send(:module_for_token, token).should == :some_module
       end
       
       it "raises an error if no module is found" do
         token = Radish::LexerToken.new(:other_type, '').extend Radish::TokenInstanceMethods
-        lambda{subject.send(:symbolize, token)}.should raise_error(Radish::ParseError)
+        lambda{subject.send(:module_for_token, token)}.should raise_error(Radish::ParseError)
+      end
+    end
+    
+    describe "#symbolize" do
+      it "extends the token with module_for_token(token)" do
+        token = mock!.extend(:some_module).subject
+        stub(token).parser = subject
+        mock(subject).module_for_token(token){:some_module}
+        subject.send(:symbolize, token).should == token
+      end
+      
+      it "sets the parser value on the token" do
+        mock(token = 'some token').parser = subject
+        stub(token).extend
+        stub(subject).module_for_token(token){:some_module}
+        subject.send(:symbolize, token).should == token
       end
     end
     

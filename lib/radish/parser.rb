@@ -1,3 +1,4 @@
+require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/object/returning'
 require 'radish/token'
 
@@ -17,16 +18,22 @@ module Radish
       @symbol_table ||= {}
     end
     
-    def self.deftoken(type, lbp, &blk)
-      tok_module = Module.new do
-        extend TokenClassMethods
-        include TokenInstanceMethods
-        define_method(:type) do
-          type
+    def self.deftoken(type, lbp=0, &blk)
+      tok_module = symbol_table[type]
+      if tok_module
+        tok_module.lbp = lbp if lbp > tok_module.lbp
+      else
+        tok_module = Module.new do
+          extend TokenClassMethods
+          include TokenInstanceMethods
+          mattr_accessor :lbp
+          
+          define_method(:type) do
+            type
+          end
         end
-        define_method(:lbp) do
-          lbp
-        end
+        
+        tok_module.lbp = lbp
       end
       tok_module.module_eval(&blk) if block_given?
       symbol_table[type] = tok_module
@@ -79,14 +86,17 @@ module Radish
       returning(next_token) { self.next_token = nil }
     end
     
+    def module_for_token(token, type=token.type)
+      symbol_table.fetch(type) do
+        raise ParseError.new("Unrecognized token type from lexer", token)
+      end
+    end
+    
     def symbolize(token)
-      token_module = symbol_table[token.type]
-
-      raise ParseError.new("Unrecognized token type from lexer", token) if token_module.nil?
-
-      token.extend(token_module)
-      token.parser = self
-      token
+      returning(token) do
+        token.extend(module_for_token(token))
+        token.parser = self
+      end
     end
     
   end

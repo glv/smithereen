@@ -10,31 +10,33 @@ module RadishSamples
 
     attr_reader :prefix, :suffix
     attr_accessor :i
-    attr_reader :s, :result, :length, :op_re
+    attr_reader :s, :result, :length
 
-    def init_op_re
-      @op_re = Regexp.new("\A[" + Regexp.escape(@prefix) + "]" +
-      "[" + Regexp.escape(@suffix) + "]*", 
-      Regexp::MULTILINE)
+    def op_re
+      @op_re ||= build_op_re
+    end
+    
+    def build_op_re
+      Regexp.new("\\A[#{Regexp.escape(@prefix)}][#{Regexp.escape(@suffix)}]*", 
+                 Regexp::MULTILINE)
     end
 
     def prefix=(p)
       @prefix = p
-      init_op_re
+      @op_re = nil
     end
 
     def suffix=(s)
       @suffix = s
-      init_op_re
+      @op_re = nil
     end
 
-    protected :s, :result, :length, :op_re, :init_op_re, :i, :i=
+    protected :s, :result, :length, :op_re, :build_op_re, :i, :i=
 
     def initialize(s)
       super(s)
-      @prefix = '<>+-&'
-      @suffix = '=>&:' 
-      init_op_re
+      self.prefix = '<>+-&|=!'
+      self.suffix = '=>&:|' 
     end
 
     def produce_next_token
@@ -52,7 +54,6 @@ module RadishSamples
         # ??? do finiteness check
         make_token(:number, $&)
       when /\A(['"])(.*?)\1/
-        puts "string"
         str_source_size = $&.size
         str = $2.gsub(%r{\\[bfnrt]}) do |m|
           case m[1]
@@ -70,9 +71,9 @@ module RadishSamples
         move $&.size
         produce_next_token
       when op_re
-        make_token($&.to_sym, $&)
+        make_token(:operator, $&)
       when /\A./
-        make_token($&.to_sym, $&)
+        make_token(:operator, $&)
       else
         puts "yikes!"
         # ??? report error somehow

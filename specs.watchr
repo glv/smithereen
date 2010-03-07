@@ -4,14 +4,14 @@
 # --------------------------------------------------
 # Rules
 # --------------------------------------------------
-watch( '^spec.*/.*_spec\.rb'                 )  { |m| ruby  m[0] }
-watch( '^lib(.*)/(.*?)\.rb'                  )  { |m| ruby "spec#{m[1]}/#{m[2]}_spec.rb" }
-watch( '^spec/spec_helper\.rb'               )  { ruby specs }
-
-watch( '^samples/(.*/)?(.*?)\.rb'            )  { |m| cuke "features/#{m[2]}.feature" }
-watch( '^features/.*\.feature'               )  { |m| cuke m[0] }
-watch( '^features/support/.*'                )  { |m| cuke features }
-watch( '^features/step_definitions/.*'       )  { |m| cuke features }
+watch( '^spec.*/.*_spec\.rb'                 ) { |m| ruby  m[0] }
+watch( '^lib(.*)/(.*?)\.rb'                  ) { |m| ruby "spec#{m[1]}/#{m[2]}_spec.rb" }
+watch( '^spec/spec_helper\.rb'               ) { ruby specs }
+                                              
+watch( '^samples/(.*/)?(.*?)\.rb'            ) { |m| cuke "features/#{m[2]}.feature" }
+watch( '^features/.*\.feature'               ) { |m| cuke m[0] }
+watch( '^features/support/.*'                ) { |m| cuke features }
+watch( '^features/step_definitions/.*'       ) { |m| cuke features }
 
 # --------------------------------------------------
 # Signal Handling

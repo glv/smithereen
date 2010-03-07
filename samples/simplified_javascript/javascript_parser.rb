@@ -17,11 +17,7 @@ module RadishSamples
       else
         deftoken(type, lbp) do
           infix do |left|
-<<<<<<< HEAD
             [type, left, expression(rbp)]
-=======
-            [:call, left, type, [:array, expression(rbp)]]
->>>>>>> e5f287084a80dad938aa901913a99279d22b59b3
           end
         end
       end

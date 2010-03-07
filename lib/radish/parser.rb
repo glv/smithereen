@@ -6,7 +6,10 @@ module Radish
     END_TOKEN_TYPE = :"(end)"
     
     def self.inherited(klass)
-      klass.deftoken END_TOKEN_TYPE, 0
+      klass.deftoken(END_TOKEN_TYPE, 0) do
+        def to_msg; 'end of input'; end
+        prefix { raise self, "Unexpected end of input" }
+      end
     end
     
     # TODO: should use class_inheritable_accessor
@@ -48,7 +51,9 @@ module Radish
     # http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017
     
     def advance_if_looking_at(type)
-      raise next_token, "Expected '#{type}'" if next_token.type != type
+      if next_token.type != type
+        raise next_token, "Expected #{type}, found #{next_token.to_msg} instead"
+      end
       take_token
     end
 

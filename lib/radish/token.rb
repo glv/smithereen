@@ -28,12 +28,20 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
+    def to_msg
+      if type.to_s == text
+        "'#{text}'"
+      else
+        "#{type} (#{text})"
+      end
+    end
+    
     def prefix
-      raise ::Radish::ParseError.new("not expecting call to prefix on #{self.class}", self)
+      raise ::Radish::ParseError.new("Unexpected #{to_msg}", self)
     end
 
     def infix(left)
-      raise ::Radish::ParseError.new("not expecting call to infix on #{self.class}", self)
+      raise ::Radish::ParseError.new("Unexpected #{to_msg}", self)
     end
     
     # TODO: use delegate
@@ -44,6 +52,10 @@ module Radish
     # TODO: use delegate
     def expression(rbp=0)
       parser.expression(rbp)
+    end
+    
+    def exception(message="Parse error")
+      ::Radish::ParseError.new(message, self)
     end
   end
 end

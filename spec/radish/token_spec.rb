@@ -44,17 +44,19 @@ describe Radish::TokenClassMethods do
 end
 
 describe Radish::TokenInstanceMethods do
-  subject { Object.new.extend Radish::TokenInstanceMethods }
+  subject { Radish::LexerToken.new(:foo, 'bar').extend Radish::TokenInstanceMethods }
   
   describe "#prefix" do
     it "complains if called" do
-      lambda{subject.prefix}.should raise_error(Radish::ParseError)
+      lambda{subject.prefix}.should raise_error(Radish::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
+      operator_token = Radish::LexerToken.new(:+, '+').extend Radish::TokenInstanceMethods
+      lambda{operator_token.prefix}.should raise_error(Radish::ParseError, "Unexpected '+': #{operator_token}")
     end
   end
 
   describe "#infix" do
     it "complains if called" do
-      lambda{subject.infix(1)}.should raise_error(Radish::ParseError)
+      lambda{subject.infix(1)}.should raise_error(Radish::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
     end
   end
   
@@ -74,6 +76,31 @@ describe Radish::TokenInstanceMethods do
     it "delegates to parser with default lbp of 0" do
       stub(subject).parser.mock!.expression(0)
       subject.expression
+    end
+  end
+  
+  describe "#exception" do
+    it "creates a ParseError with the passed message and the token" do
+      error = subject.exception('some message')
+      error.message.should == "some message: #{subject}"
+      error.token.should == subject
+    end
+    
+    it "uses 'Parse error' as the default message" do
+      error = subject.exception
+      error.message.should == "Parse error: #{subject}"
+    end
+  end
+  
+  describe "#to_msg" do
+    it "returns just the token text if the type and text are the same" do
+      tok = Radish::LexerToken.new(:+, '+').extend Radish::TokenInstanceMethods
+      tok.to_msg.should == "'+'"
+    end
+
+    it "returns the token type and text if the type and text are different" do
+      tok = Radish::LexerToken.new(:integer, '42').extend Radish::TokenInstanceMethods
+      tok.to_msg.should == "integer (42)"
     end
   end
 end

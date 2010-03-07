@@ -159,8 +159,9 @@ describe Radish::Parser do
       end
       
       it "raises an error if the next token does not have the expected type" do
-        mock(subject).next_token{Radish::LexerToken.new(:other_type, '')}.times(any_times)
-        lambda{subject.advance_if_looking_at(:some_type)}.should raise_error(Radish::ParseError)
+        other_token = Radish::LexerToken.new(:other_type, 'ot').extend Radish::TokenInstanceMethods
+        mock(subject).next_token{other_token}.times(any_times)
+        lambda{subject.advance_if_looking_at(:some_type)}.should raise_error(Radish::ParseError, "Expected some_type, found other_type (ot) instead: #{other_token}")
       end
     end
     
@@ -231,10 +232,26 @@ describe Radish::Parser do
       end
       
       it "raises an error if no module is found" do
-        token = Radish::LexerToken.new(:other_type, '')
+        token = Radish::LexerToken.new(:other_type, '').extend Radish::TokenInstanceMethods
         lambda{subject.send(:symbolize, token)}.should raise_error(Radish::ParseError)
       end
     end
     
+  end
+  
+  describe "(end) token" do    
+    it "reports 'Unexpected end of input' when prefix is called" do
+      lexer = mock!.take_token{nil}.times(2).subject
+      parser = Class.new(Parser).new(lexer)
+      lambda{parser.send(:take_token).prefix}.should raise_error(Radish::ParseError, "Unexpected end of input: #{parser.send(:take_token)}")
+    end
+    
+    describe "#to_msg" do
+      it "returns 'end of input'" do
+        lexer = mock!.take_token{nil}.subject
+        parser = Class.new(Parser).new(lexer)
+        parser.send(:take_token).to_msg.should == 'end of input'
+      end
+    end
   end
 end

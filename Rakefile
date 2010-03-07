@@ -70,6 +70,8 @@ end
 
 task :default => ['spec:examples', 'cucumber:progress']
 
+task :verbose => ['spec:doc_format', 'spec:examples', 'cucumber']
+
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""

@@ -47,24 +47,24 @@ module Radish
     # following the suggestion from Tom Lynn at 
     # http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017
     
-    def expression(rbp=0)
-      start_expression = take_token.prefix
-      extend_with_infixes(rbp, start_expression)
-    end
-    
     def advance_if_looking_at(type)
       raise next_token, "Expected '#{type}'" if next_token.type != type
       take_token
     end
 
-    protected
+    def expression(rbp=0)
+      start_expression = take_token.prefix
+      extend_with_infixes(rbp, start_expression)
+    end
     
-    attr_writer :next_token
+    protected
     
     def extend_with_infixes(rbp, sub_expression)
       sub_expression = take_token.infix(sub_expression) while next_token.lbp > rbp
       sub_expression
     end
+    
+    attr_writer :next_token
     
     def next_token
       @next_token ||= symbolize(lexer.take_token || LexerToken.new(END_TOKEN_TYPE, ''))

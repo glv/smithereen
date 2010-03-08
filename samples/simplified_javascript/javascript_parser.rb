@@ -10,9 +10,7 @@ module Radish::TokenInstanceMethods
       loop do
         result << yield
         advance_if_looking_at separator or break
-        if options[:allow_extra]
-          break if looking_at? terminator
-        end
+        break if options[:allow_extra] && looking_at?(terminator)
       end
     end
     advance_if_looking_at! terminator
@@ -29,20 +27,10 @@ module RadishSamples
     end
     protected :module_for_token
   
-    # Either need to define :first=, :second=, and :arity= in 
-    # another module that gets included in the symbol modules,
-    # or define them (or include that module) directly in the
-    # blocks here.
     def self.infix_base(type, lbp, rbp, &infix_blk)
-      if block_given?
-        deftoken(type, lbp) do
-          infix(&infix_blk)
-        end
-      else
-        deftoken(type, lbp) do
-          infix {|left| [type, left, expression(rbp)] }
-        end
-      end
+      tok_module = deftoken(type, lbp)
+      infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
+      tok_module.infix &infix_blk
     end
   
     def self.infix(type, bp, &infix_blk)
@@ -54,26 +42,14 @@ module RadishSamples
     end
     
     def self.prefix(type, &prefix_blk)
-      # TODO: should be able to leave lbp blank here.
-      if block_given?
-        deftoken(type, 0) do
-          prefix(&prefix_blk)
-        end
-      else
-        deftoken(type, 0) do
-          prefix { [type, expression(70)] }
-        end
-      end
+      tok_module = deftoken(type)
+      prefix_blk = lambda{ [type, expression(70)] } unless block_given?
+      tok_module.prefix &prefix_blk
     end    
   
     def self.symbol(type, bp=0, &prefix_blk)
-      if block_given?
-        deftoken(type, bp) do
-          prefix(&prefix_blk)
-        end
-      else
-        deftoken(type, bp)
-      end
+      tok_module = deftoken(type, bp)
+      tok_module.prefix(&prefix_blk) if block_given?
     end
   
     class <<self
@@ -105,7 +81,7 @@ module RadishSamples
     # prefix :function
     
     prefix :'[' do
-      [:array] + delimited_list(:',', :']'){ expression(0) }
+      [:array] + delimited_list(:',', :']') { expression(0) }
     end
     
     prefix :'{' do

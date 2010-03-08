@@ -75,16 +75,16 @@ Radish has one distinctive design characteristic, the full implications
 of which are still unclear.  It may have to be changed if it proves
 to have too great a performance impact.
 
-One interesting characteristic of TDOP is that tokens actively
-participate in the parsing process: tokens parse their own
-subexpressions.
+One interesting characteristic of TDOP in an object-oriented language
+is that it makes sense for tokens to actively participate in the
+parsing process: tokens parse their own subexpressions.
 
 A naive implementation of that, however, results in very tight
-coupling of lexer and parser.  In Crockford's implementation, the
-parser augments tokens by adding new methods to them when they are
-received from the lexer.  That's a very JavaScript-y solution that
-nicely demonstrates part of Crockford's point about dynamic languages'
-natural affinity for TDOP.
+coupling of lexer and parser.  Crockford's implementation avoids
+that by having the parser augment tokens, adding new methods to
+them when they are received from the lexer.  That's a very JavaScript-y
+solution that nicely demonstrates part of Crockford's point about
+dynamic languages' natural affinity for TDOP.
 
 It seemed to me that the best way to deal with this in Ruby was for
 the parser to extend tokens with modules.  So a Radish parser's

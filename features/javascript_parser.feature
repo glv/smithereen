@@ -111,7 +111,7 @@ Feature: JavaScript Parser
     
     # TODO: need some with names as keys, when names are supported
     Examples:
-      | input     | result                                        |
-      | {}        | [:object ]                                    |
-      | {"a": 2}  | [:object, [:keyval, [:lit, "a"], [:lit, 2]] ] |
-      | {1:2,3:4} | [:object, [:keyval,[:lit,1],[:lit,2]], [:keyval,[:lit,3],[:lit,4]]] |
+      | input     | result                                                 |
+      | {}        | [:object ]                                             |
+      | {"a": 2}  | [:object, [:lit, "a"], [:lit, 2] ]                     |
+      | {1:2,3:4} | [:object, [:lit, 1], [:lit, 2], [:lit, 3], [:lit, 4] ] |

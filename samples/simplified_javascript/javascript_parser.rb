@@ -49,6 +49,7 @@ module RadishSamples
       tok_module.prefix(&prefix_blk) if block_given?
     end
   
+    # --------------------------------------------------- symbols and constants
     symbol :':'
     symbol :')'
     symbol :']'
@@ -63,12 +64,28 @@ module RadishSamples
       [:lit, "#{text}"]
     end
   
+    # --------------------------------------------------------- unary operators
     prefix :-
     prefix :'!'
     prefix :typeof
     
+    # ---------------------------------------------------- compound expressions
     prefix :'(' do
       returning(expression(0)) { advance_if_looking_at!(:')') }
+    end
+    
+    prefix :'[' do
+      [:array] + delimited_list(:',', :']') { expression(0) }
+    end
+    
+    prefix :'{' do
+      keyvals = delimited_list(:',', :'}') do
+        key = take_token
+        raise key, "Bad property name" unless [:string, :number].include?(key.type)
+        advance_if_looking_at! :':'
+        [key.prefix, expression(0)]
+      end
+      [:object, *keyvals.flatten(1)]
     end
     
     # TODO: while I was working on the other prefix tokens I plugged this in,
@@ -96,19 +113,7 @@ module RadishSamples
     #   [:function name args body]
     # end
     
-    prefix :'[' do
-      [:array] + delimited_list(:',', :']') { expression(0) }
-    end
-    
-    prefix :'{' do
-      [:object] + delimited_list(:',', :'}') do
-        key = take_token
-        raise key, "Bad property name" unless [:string, :number].include?(key.type)
-        advance_if_looking_at! :':'
-        [:keyval, key.prefix, expression(0)]
-      end
-    end
-    
+    # --------------------------------------------------------- infix operators
     infix :'?',   20 do |left|
       middle = expression(0)
       advance_if_looking_at! :':'
@@ -132,6 +137,7 @@ module RadishSamples
     infix :'*',   60
     infix :'/',   60
           
+    # TODO: not tested yet.
     infix :'.',   80 do |left|
       # ??? Don't really have the concept of arity in our impl.  What's the equivalent?
       raise next_token, "Expected a property name." unless next_token.arity == 'name'
@@ -146,6 +152,8 @@ module RadishSamples
       # ??? raise if left is not something callable
       [:call, left, delimited_list(:',', :')'){ expression(0) }]
     end
+    
+    # -------------------------------------------------------------- statements
     
   end
 end

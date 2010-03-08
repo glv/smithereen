@@ -65,11 +65,8 @@ module Radish
     # Advances over a token of the supplied type and returns it,
     # or raises an error if the next token is of a different type. 
     def advance_if_looking_at!(type)
-      returning(result = advance_if_looking_at(type)) do
-        unless result
+      advance_if_looking_at(type) or 
           raise next_token, "Expected #{symbol_table[type].to_msg}, found #{next_token.to_msg} instead"
-        end
-      end
     end
 
     def expression(rbp=0)

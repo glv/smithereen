@@ -109,6 +109,13 @@ module RadishSamples
       end
     end
     
+    infix :'?',   20 do |left|
+      middle = expression(0)
+      advance_if_looking_at! :':'
+      right = expression(0)
+      [:'?', left, middle, right]
+    end
+    
     infix :'&&',  30, :assoc => :right
     infix :'||',  30, :assoc => :right
 
@@ -119,23 +126,23 @@ module RadishSamples
     infix :'>',   40, :assoc => :right
     infix :'>=',  40, :assoc => :right
 
-    infix  :'+',  50
-    infix  :'-',  50
+    infix :'+',   50
+    infix :'-',   50
                   
-    infix  :'*',  60
-    infix  :'/',  60
-
-    infix  :'.',  80 do |left|
+    infix :'*',   60
+    infix :'/',   60
+          
+    infix :'.',   80 do |left|
       # ??? Don't really have the concept of arity in our impl.  What's the equivalent?
       raise next_token, "Expected a property name." unless next_token.arity == 'name'
       [:propref, left, take_token]
     end
 
-    infix  :'[',  80 do |left|
+    infix :'[',   80 do |left|
       returning([:lookup, left, expression(0)]) { advance_if_looking_at! :']' }
     end
 
-    infix  :'(',  80 do |left|
+    infix :'(',   80 do |left|
       # ??? raise if left is not something callable
       [:call, left, delimited_list(:',', :')'){ expression(0) }]
     end

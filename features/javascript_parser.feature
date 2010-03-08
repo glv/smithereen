@@ -75,6 +75,17 @@ Feature: JavaScript Parser
       | 1 +  2 *  3 | [:+,    [:lit, 1], [:*, [:lit, 2], [:lit, 3]] ] |
       | 1 /  2 -  3 | [:-,    [:/, [:lit, 1], [:lit, 2]], [:lit, 3] ] |
       
+  Scenario Outline: Ternary operator
+    When I ask for the parse tree for "<input>"
+    Then I should see the tree "<result>"
+    
+    Examples:
+      | input        | result                                                   |
+      | 1 ? 2 : 3    | [:'?', [:lit, 1], [:lit, 2], [:lit, 3] ]                 |
+      | 1&&2 ? 3 : 4 | [:'?', [:'&&', [:lit,1], [:lit,2]], [:lit,3], [:lit,4] ] |
+      | 1 ? 2&&3 : 4 | [:'?', [:lit,1], [:'&&', [:lit,2], [:lit,3]], [:lit,4] ] |
+      | 1 ? 2 : 3&&4 | [:'?', [:lit,1], [:lit,2], [:'&&', [:lit,3], [:lit,4]] ] |
+      
   Scenario Outline: Grouping with parentheses
     When I ask for the parse tree for "<input>"
     Then I should see the tree "<result>"

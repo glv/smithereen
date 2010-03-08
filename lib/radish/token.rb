@@ -36,6 +36,7 @@ module Radish
     delegate :advance_if_looking_at, 
              :advance_if_looking_at!,
              :expression, 
+             :looking_at?,
              :next_token, 
              :take_token, 
         :to => :parser

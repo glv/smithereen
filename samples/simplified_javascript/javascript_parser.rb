@@ -3,17 +3,19 @@ $: << File.dirname(__FILE__)
 require 'radish'
 
 module Radish::TokenInstanceMethods
-  # TODO: Build a better way to inject just methods into TIM.
-  def delimited_list(separator, terminator=nil)
+  # TODO: Build a better way to inject such methods into TIM.
+  def delimited_list(separator, terminator, options={})
     result = []
-    unless terminator && next_token.type == terminator
+    until looking_at?(terminator)
       loop do
         result << yield
-        # TODO: handle options[:allow_extra]
         advance_if_looking_at separator or break
+        if options[:allow_extra]
+          break if looking_at? terminator
+        end
       end
     end
-    advance_if_looking_at! terminator if terminator
+    advance_if_looking_at! terminator
     result
   end
 end

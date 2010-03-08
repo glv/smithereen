@@ -200,6 +200,18 @@ describe Radish::Parser do
       end
     end
     
+    describe "#looking_at?" do
+      it "returns true if the next token has the requested type" do
+        mock(subject).next_token.mock!.type{:some_type}
+        subject.looking_at?(:some_type).should be_true
+      end
+      
+      it "returns false if the next token does not have the requested type" do
+        mock(subject).next_token.mock!.type{:other_type}
+        subject.looking_at?(:some_type).should be_false
+      end
+    end
+    
     describe "#advance_if_looking_at" do
       it "takes and returns the next token if it has the expected type" do
         tok = mock!.type{:some_type}.subject

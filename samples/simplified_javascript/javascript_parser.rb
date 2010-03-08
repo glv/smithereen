@@ -139,9 +139,9 @@ module RadishSamples
           
     # TODO: not tested yet.
     infix :'.',   80 do |left|
-      # ??? Don't really have the concept of arity in our impl.  What's the equivalent?
-      raise next_token, "Expected a property name." unless next_token.arity == 'name'
-      [:propref, left, take_token]
+      right = advance_if_looking_at(:name) or 
+          raise next_token, "Expected a property name."
+      [:propref, left, right]
     end
 
     infix :'[',   80 do |left|

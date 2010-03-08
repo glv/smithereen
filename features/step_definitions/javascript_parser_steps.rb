@@ -7,10 +7,19 @@ end
 
 When /^I ask for the parse tree for "(.*)"$/ do |js_source|
   parser = @parser_class.new(@lexer_class.new(js_source))
-  @result = parser.parse
+  begin
+    @result = parser.parse
+    @syntax_error = nil
+  rescue Radish::ParseError => e
+    @result = nil
+    @syntax_error = e
+  end
 end
 
 Then /^I should see the tree "(.*)"$/ do |expected_tree_string|
+  if @syntax_error
+    fail "Expected a parse tree, got exception #{@syntax_error} instead"
+  end
   @result.should == eval(expected_tree_string)
 end
 

@@ -55,11 +55,15 @@ module Radish
     # following the suggestion from Tom Lynn at 
     # http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017
     
+    # Advances over a token of the supplied type and returns it,
+    # or returns nil if the next token is of a different type.
     def advance_if_looking_at(type)
       return nil unless next_token.type == type
       take_token
     end
 
+    # Advances over a token of the supplied type and returns it,
+    # or raises an error if the next token is of a different type. 
     def advance_if_looking_at!(type)
       returning(result = advance_if_looking_at(type)) do
         unless result

@@ -2,15 +2,30 @@ $: << File.dirname(__FILE__) + '/../../lib'
 $: << File.dirname(__FILE__)
 require 'radish'
 
+module Radish::TokenInstanceMethods
+  # TODO: Build a better way to inject just methods into TIM.
+  def delimited_list(separator, terminator=nil)
+    result = []
+    unless terminator && next_token.type == terminator
+      loop do
+        result << yield
+        # TODO: handle options[:allow_extra]
+        advance_if_looking_at separator or break
+      end
+    end
+    advance_if_looking_at! terminator if terminator
+    result
+  end
+end
+
 module RadishSamples
   class JavaScriptParser < Radish::Parser
-    
-    protected
     
     def module_for_token(token)
       return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)
       super
     end
+    protected :module_for_token
   
     # Either need to define :first=, :second=, and :arity= in 
     # another module that gets included in the symbol modules,
@@ -88,29 +103,15 @@ module RadishSamples
     # prefix :function
     
     prefix :'[' do
-      returning(result = [:array]) do
-        if next_token.type != :']'
-          loop do
-            result << expression(0)
-            advance_if_looking_at :',' or break
-          end
-        end
-        advance_if_looking_at! :']'
-      end
+      [:array] + delimited_list(:',', :']'){ expression(0) }
     end
     
     prefix :'{' do
-      returning(result = [:object]) do
-        if next_token.type != :'}'
-          loop do
-            key = take_token
-            raise key, "Bad property name" unless [:string, :number].include?(key.type)
-            advance_if_looking_at! :':'
-            result << [:keyval, key.prefix, expression(0)]
-            advance_if_looking_at :',' or break
-          end
-        end
-        advance_if_looking_at! :'}'
+      [:object] + delimited_list(:',', :'}') do
+        key = take_token
+        raise key, "Bad property name" unless [:string, :number].include?(key.type)
+        advance_if_looking_at! :':'
+        [:keyval, key.prefix, expression(0)]
       end
     end
     
@@ -142,16 +143,7 @@ module RadishSamples
 
     infix  :'(',   80 do |left|
       # ??? raise if left is not something callable
-      args = []
-      returning([:call, left, args]) do
-        if next_token.type != :')'
-          loop do
-            args << expression(0)
-            advance_if_looking_at :',' or break
-          end
-        end
-        advance_if_looking_at! :')'
-      end
+      [:call, left, delimited_list(:',', :')'){ expression(0) }]
     end
     
   end

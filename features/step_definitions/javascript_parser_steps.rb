@@ -5,10 +5,14 @@ Given /^I have loaded the sample JavaScript parser$/ do
   @parser_class = RadishSamples::SimplifiedJavaScriptParser
 end
 
-When /^I ask for the parse tree for "(.*)"$/ do |js_source|
+When /^I ask for the parse tree for (\w+) "(.*)"$/ do |construct_type, js_source|
   parser = @parser_class.new(@lexer_class.new(js_source))
   begin
-    @result = parser.parse
+    @result = case construct_type
+              when 'expression' then parser.parse_expression
+              when 'statement'  then parser.parse_statement
+              else                   raise "Unrecognized construct type: #{construct_type}"
+              end
     @syntax_error = nil
   rescue Radish::ParseError => e
     @result = nil

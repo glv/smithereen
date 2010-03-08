@@ -102,7 +102,7 @@ module Radish
     end
     
     def symbolize(token)
-      returning(token) do
+      returning token do
         token.extend(module_for_token(token))
         token.parser = self
       end

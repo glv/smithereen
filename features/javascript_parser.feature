@@ -7,7 +7,7 @@ Feature: JavaScript Parser
     Given I have loaded the sample JavaScript parser
  
   Scenario Outline: Literals
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -18,7 +18,7 @@ Feature: JavaScript Parser
       | 'a'   | [:lit, "a" ] |
       
   Scenario Outline: Unary operators
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -29,7 +29,7 @@ Feature: JavaScript Parser
       | typeof 2 | [:typeof, [:lit, 2]     ] |
       
   Scenario Outline: Simple binary expressions
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -49,11 +49,11 @@ Feature: JavaScript Parser
       
   # This one messes with Gherkin's example table syntax:
   Scenario: Binary || operator
-    When I ask for the parse tree for "2 || 2"
+    When I ask for the parse tree for expression "2 || 2"
     Then I should see the tree "[:'||', [:lit, 2], [:lit, 2]]"
       
   Scenario Outline: Mixed binary and unary operators
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -63,7 +63,7 @@ Feature: JavaScript Parser
       | 2 +  - 2 | [:+,    [:lit, 2], [:-, [:lit, 2]]] |
       
   Scenario Outline: Binary operator precedence
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -76,7 +76,7 @@ Feature: JavaScript Parser
       | 1 /  2 -  3 | [:-,    [:/, [:lit, 1], [:lit, 2]], [:lit, 3] ] |
       
   Scenario Outline: Ternary operator
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -87,7 +87,7 @@ Feature: JavaScript Parser
       | 1 ? 2 : 3&&4 | [:'?', [:lit,1], [:lit,2], [:'&&', [:lit,3], [:lit,4]] ] |
       
   Scenario Outline: Grouping with parentheses
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -96,7 +96,7 @@ Feature: JavaScript Parser
       | 1 / (2 - 3) | [:/, [:lit, 1], [:-, [:lit, 2], [:lit, 3]] ] |
       
   Scenario Outline: Arrays
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     Examples:
@@ -106,7 +106,7 @@ Feature: JavaScript Parser
       | [ 2, 3 ] | [:array, [:lit, 2], [:lit, 3] ] |
 
   Scenario Outline: Objects
-    When I ask for the parse tree for "<input>"
+    When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
     # TODO: need some with names as keys, when names are supported
@@ -115,3 +115,13 @@ Feature: JavaScript Parser
       | {}        | [:object ]                                             |
       | {"a": 2}  | [:object, [:lit, "a"], [:lit, 2] ]                     |
       | {1:2,3:4} | [:object, [:lit, 1], [:lit, 2], [:lit, 3], [:lit, 4] ] |
+
+  Scenario Outline: Simple statements
+    When I ask for the parse tree for statement "<input>"
+    Then I should see the tree "<result>"
+    
+    Examples:
+      | input     | result                |
+      | break;    | [:break ]             |
+      | return;   | [:return]             |          
+      | return 2; | [:return, [:lit, 2] ] |

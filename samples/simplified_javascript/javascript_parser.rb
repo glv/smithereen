@@ -18,6 +18,20 @@ module Radish::TokenInstanceMethods
   end
 end
 
+module Radish::TokenClassMethods
+  # TODO: Build a better way to inject such methods into TCM.
+  def stmt(&blk)
+    raise ::Radish::GrammarError, "stmt blocks must not have positive arity" unless blk.arity <= 0
+    defblock :stmt, &blk
+    # TODO: do I need to add some explicit indicator that this module is a
+    #       statement?  For now I'm using respond_to?(:stmt).  But for prefix
+    #       and infix, there's a default implementation that detects a syntax
+    #       error.  Is there a case where stmt could be called on a token that's
+    #       not a statement, such that we would need such a default implementation
+    #       of stmt as well?  If so, we need an explicit flag.
+  end
+end
+
 module RadishSamples
   class SimplifiedJavaScriptParser < Radish::Parser
     
@@ -26,7 +40,30 @@ module RadishSamples
       super
     end
     protected :module_for_token
-  
+    
+    def parse_statement
+      returning(statement) { advance_if_looking_at! END_TOKEN_TYPE }
+    end
+    
+    def parse_expression
+      parse
+    end
+    
+    def statement
+      if next_token.respond_to?(:stmt)
+        # TODO: scope reserve.  Why?
+        return take_token.stmt
+      end
+      
+      returning expression(0) do |expr|
+        # TODO: apparently only assignments and (for some reason) expressions
+        #       starting with '(' are allowed as statements.  But for now that
+        #       will mess up our testing.
+        # raise error unless expr is an assignment or starts with '('
+        advance_if_looking_at! :';'
+      end
+    end
+    
     def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
       unless [:left, :right].include?(options[:assoc])
         raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
@@ -48,11 +85,17 @@ module RadishSamples
       tok_module = deftoken(type, bp)
       tok_module.prefix(&prefix_blk) if block_given?
     end
+    
+    def self.stmt(type, &stmt_blk)
+      deftoken(type) do
+        stmt &stmt_blk
+      end
+    end
   
     # --------------------------------------------------- symbols and constants
     # symbol :name
     symbol :':'
-    # symbol :';'
+    symbol :';'
     symbol :')'
     symbol :']'
     symbol :'}'
@@ -171,8 +214,25 @@ module RadishSamples
     # stmt :'{'
     # stmt :var
     # stmt :if
-    # stmt :return
-    # stmt :break
+    
+    stmt :return do
+      returning [:return] do |result|
+        result << expression(0) unless looking_at? :';'
+        advance_if_looking_at! :';'
+        # TODO: remove '|| looking_at?(END_TOKEN_TYPE) when blocks are supported.
+        #       return should only be permitted in a block.
+        raise next_token, "Unreachable statement" unless looking_at?(:'}') || looking_at?(END_TOKEN_TYPE)
+      end
+    end
+    
+    stmt :break do
+      advance_if_looking_at! :';'
+      # TODO: remove '|| looking_at?(END_TOKEN_TYPE) when blocks are supported.
+      #       break should only be permitted in a block.
+      raise next_token, "Unreachable statement" unless looking_at?(:'}') || looking_at?(END_TOKEN_TYPE)
+      [:break]
+    end
+    
     # stmt :while
     
   end

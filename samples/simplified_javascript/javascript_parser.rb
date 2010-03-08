@@ -50,11 +50,21 @@ module RadishSamples
     end
   
     # --------------------------------------------------- symbols and constants
+    # symbol :name
     symbol :':'
+    # symbol :';'
     symbol :')'
     symbol :']'
     symbol :'}'
     symbol :','
+    # symbol :else
+    
+    # constant :true,  true
+    # constant :false, false
+    # constant :null,  nil
+    # constant :pi,    3.141592653589793
+    
+    # symbol :this
     
     symbol :number do
       [:lit, text =~ /\./ ? text.to_f : text.to_i]
@@ -114,6 +124,10 @@ module RadishSamples
     # end
     
     # --------------------------------------------------------- infix operators
+    # assignment :'='
+    # assignment :'+='
+    # assignment :'-='
+    
     infix :'?',   20 do |left|
       middle = expression(0)
       advance_if_looking_at! :':'
@@ -154,6 +168,12 @@ module RadishSamples
     end
     
     # -------------------------------------------------------------- statements
+    # stmt :'{'
+    # stmt :var
+    # stmt :if
+    # stmt :return
+    # stmt :break
+    # stmt :while
     
   end
 end

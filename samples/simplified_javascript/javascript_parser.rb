@@ -19,7 +19,7 @@ module Radish::TokenInstanceMethods
 end
 
 module RadishSamples
-  class JavaScriptParser < Radish::Parser
+  class SimplifiedJavaScriptParser < Radish::Parser
     
     def module_for_token(token)
       return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)

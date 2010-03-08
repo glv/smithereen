@@ -3,7 +3,7 @@ $: << File.dirname(__FILE__)
 require 'radish'
 
 module RadishSamples
-  class JavaScriptLexer < Radish::Lexer
+  class SimplifiedJavaScriptLexer < Radish::Lexer
     LOWER = ?a .. ?z
     UPPER = ?A .. ?Z
     DIGIT = ?0 .. ?9

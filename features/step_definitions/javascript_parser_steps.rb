@@ -1,8 +1,8 @@
 Given /^I have loaded the sample JavaScript parser$/ do
   require File.dirname(__FILE__) + '/../../samples/simplified_javascript/javascript_lexer'
   require File.dirname(__FILE__) + '/../../samples/simplified_javascript/javascript_parser'
-  @lexer_class  = RadishSamples::JavaScriptLexer
-  @parser_class = RadishSamples::JavaScriptParser
+  @lexer_class  = RadishSamples::SimplifiedJavaScriptLexer
+  @parser_class = RadishSamples::SimplifiedJavaScriptParser
 end
 
 When /^I ask for the parse tree for "(.*)"$/ do |js_source|

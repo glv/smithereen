@@ -35,7 +35,8 @@ describe Radish::Parser do
     describe "::deftoken" do
       it "creates a new module and stores it in the symbol table" do
         mock_module = 'bar'
-        stub(mock_module).lbp = 0
+        stub(mock_module).lbp  = 0
+        stub(mock_module).type = :foo
         mock(Module).new{mock_module}
         Parser.send(:deftoken, :foo, 0)
         Parser.symbol_table[:foo].should == mock_module
@@ -136,14 +137,14 @@ describe Radish::Parser do
     describe "#parse" do
       it "returns the value returned by expression" do
         mock(subject).expression { :some_result }
-        stub(subject).advance_if_looking_at
+        stub(subject).advance_if_looking_at!
         subject.parse.should == :some_result
       end
       
       it "advances past the (end) token after parsing the expression" do
         mock(subject) do |expect|
           expect.expression.ordered { :some_result }
-          expect.advance_if_looking_at(Parser::END_TOKEN_TYPE).ordered
+          expect.advance_if_looking_at!(Parser::END_TOKEN_TYPE).ordered
         end
         subject.parse
       end
@@ -209,10 +210,31 @@ describe Radish::Parser do
         subject.advance_if_looking_at(:some_type).should == tok
       end
       
+      it "returns nil if the next token does not have the expected type" do
+        # other_token = Radish::LexerToken.new(:other_type, 'ot')
+        # lexer = mock!.take_token{other_token}.subject
+        # parser = Class.new(Parser).new(lexer)
+        # [:some_type, :other_type].each{|t| parser.class.deftoken(t) }
+        token = mock!.type{:other_type}.subject
+        mock(subject).next_token{token}
+        subject.advance_if_looking_at(:some_type).should be_nil
+      end
+    end
+    
+    describe "#advance_if_looking_at!" do
+      it "returns the result of advance_if_looking_at" do
+        mock(subject).advance_if_looking_at(:some_type){:some_token}
+        subject.advance_if_looking_at!(:some_type).should == :some_token
+      end
+         
       it "raises an error if the next token does not have the expected type" do
         other_token = Radish::LexerToken.new(:other_type, 'ot').extend Radish::TokenInstanceMethods
-        mock(subject).next_token{other_token}.times(any_times)
-        lambda{subject.advance_if_looking_at(:some_type)}.should raise_error(Radish::ParseError, "Expected some_type, found other_type (ot) instead: #{other_token}")
+        mock(subject) do |expect|
+          expect.advance_if_looking_at(:some_type){nil}
+          expect.next_token{other_token}.times(any_times)
+        end
+        subject.class.deftoken(:some_type)
+        lambda{subject.advance_if_looking_at!(:some_type)}.should raise_error(Radish::ParseError, "Expected some_type, found other_type (ot) instead: #{other_token}")
       end
     end
     

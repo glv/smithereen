@@ -48,7 +48,6 @@ module RadishSamples
         move $&.size
         produce_next_token
       when /\A[[:alpha:]]\w*/m
-        puts "name"
         make_token(:name, $&)
       when /\A\d+(\.\d+)?([eE]\d+)?/m
         # ??? do finiteness check

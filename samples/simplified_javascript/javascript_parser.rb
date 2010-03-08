@@ -8,7 +8,7 @@ module RadishSamples
     protected
     
     def module_for_token(token)
-      return super(token, token.text.to_sym) if token.type == :operator
+      return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)
       super
     end
   
@@ -50,8 +50,12 @@ module RadishSamples
     end    
   
     def self.symbol(type, bp=0, &prefix_blk)
-      deftoken(type, bp) do
-        prefix(&prefix_blk)
+      if block_given?
+        deftoken(type, bp) do
+          prefix(&prefix_blk)
+        end
+      else
+        deftoken(type, bp)
       end
     end
   
@@ -59,6 +63,12 @@ module RadishSamples
       protected :infix_base
     end
   
+    symbol :':'
+    symbol :')'
+    symbol :']'
+    symbol :'}'
+    symbol :','
+    
     symbol :number do
       [:lit, text =~ /\./ ? text.to_f : text.to_i]
     end
@@ -68,7 +78,42 @@ module RadishSamples
     end
   
     prefix :-
-
+    prefix :'!'
+    prefix :typeof
+    
+    prefix :'(' do
+      returning(expression(0)) { advance_if_looking_at!(:')') }
+    end
+    
+    # prefix :function
+    
+    prefix :'[' do
+      returning(result = [:array]) do
+        if next_token.type != :']'
+          loop do
+            result << expression(0)
+            advance_if_looking_at :',' or break
+          end
+        end
+        advance_if_looking_at! :']'
+      end
+    end
+    
+    prefix :'{' do
+      returning(result = [:object]) do
+        if next_token.type != :'}'
+          loop do
+            key = take_token
+            raise key, "Bad property name" unless [:string, :number].include?(key.type)
+            advance_if_looking_at! :':'
+            result << [:keyval, key.prefix, expression(0)]
+            advance_if_looking_at :',' or break
+          end
+        end
+        advance_if_looking_at! :'}'
+      end
+    end
+    
     infixr :'&&',  30
     infixr :'||',  30
 
@@ -92,7 +137,7 @@ module RadishSamples
     end
 
     infix  :'[',   80 do |left|
-      returning([:lookup, left, expression(0)]) { advance_if_looking_at :']' }
+      returning([:lookup, left, expression(0)]) { advance_if_looking_at! :']' }
     end
 
     infix  :'(',   80 do |left|
@@ -102,11 +147,10 @@ module RadishSamples
         if next_token.type != :')'
           loop do
             args << expression(0)
-            break unless next_token.type == :','
-            advance_if_looking_at :','
+            advance_if_looking_at :',' or break
           end
         end
-        advance_if_looking_at :')'
+        advance_if_looking_at! :')'
       end
     end
     

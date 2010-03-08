@@ -38,12 +38,12 @@ Feature: Tiny Calculator
     Then I should get the error "<message>"
     
     Examples:
-      | input | message                                |
-      |       | Unexpected end of input                |
-      | 2+    | Unexpected end of input                |
-      | +2    | Unexpected '+'                         |
-      | 2 2   | Unexpected integer (2)                 |
-      | 2+(3  | Expected ), found end of input instead |
-      | 2+)3  | Unexpected ')'                         |
-      | 2+*3  | Unexpected '*'                         |
-      | 2-    | Unexpected end of input                |
+      | input | message                                  |
+      |       | Unexpected end of input                  |
+      | 2+    | Unexpected end of input                  |
+      | +2    | Unexpected '+'                           |
+      | 2 2   | Unexpected integer (2)                   |
+      | 2+(3  | Expected ')', found end of input instead |
+      | 2+)3  | Unexpected ')'                           |
+      | 2+*3  | Unexpected '*'                           |
+      | 2-    | Unexpected end of input                  |

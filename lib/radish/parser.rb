@@ -27,13 +27,11 @@ module Radish
           extend TokenClassMethods
           include TokenInstanceMethods
           mattr_accessor :lbp
-          
-          define_method(:type) do
-            type
-          end
+          mattr_accessor :type
         end
         
         tok_module.lbp = lbp
+        tok_module.type = type
       end
       tok_module.module_eval(&blk) if block_given?
       symbol_table[type] = tok_module
@@ -50,7 +48,7 @@ module Radish
     end
     
     def parse
-      returning(expression) { advance_if_looking_at END_TOKEN_TYPE }
+      returning(expression) { advance_if_looking_at! END_TOKEN_TYPE }
     end
     
     # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led',
@@ -58,10 +56,16 @@ module Radish
     # http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/#comment-247017
     
     def advance_if_looking_at(type)
-      if next_token.type != type
-        raise next_token, "Expected #{type}, found #{next_token.to_msg} instead"
-      end
+      return nil unless next_token.type == type
       take_token
+    end
+
+    def advance_if_looking_at!(type)
+      returning(result = advance_if_looking_at(type)) do
+        unless result
+          raise next_token, "Expected #{symbol_table[type].to_msg}, found #{next_token.to_msg} instead"
+        end
+      end
     end
 
     def expression(rbp=0)

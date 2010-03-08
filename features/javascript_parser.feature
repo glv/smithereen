@@ -13,6 +13,7 @@ Feature: JavaScript Parser
     Examples:
       | input | result       |
       | 2     | [:lit, 2   ] |
+      | 3.14  | [:lit, 3.14] |
       | "a"   | [:lit, "a" ] |
       | 'a'   | [:lit, "a" ] |
       
@@ -21,8 +22,11 @@ Feature: JavaScript Parser
     Then I should see the tree "<result>"
     
     Examples:
-      | input | result           |
-      | - 2   | [:-, [:lit, 2] ] |
+      | input    | result                    |
+      | - 2      | [:-,      [:lit, 2]     ] |
+      | -3.14    | [:-,      [:lit, 3.14 ] ] |
+      | ! 2      | [:'!',    [:lit, 2]     ] |
+      | typeof 2 | [:typeof, [:lit, 2]     ] |
       
   Scenario Outline: Simple binary expressions
     When I ask for the parse tree for "<input>"
@@ -70,3 +74,33 @@ Feature: JavaScript Parser
       | 1 -  2 >  3 | [:>,    [:-, [:lit, 1], [:lit, 2]], [:lit, 3] ] |
       | 1 +  2 *  3 | [:+,    [:lit, 1], [:*, [:lit, 2], [:lit, 3]] ] |
       | 1 /  2 -  3 | [:-,    [:/, [:lit, 1], [:lit, 2]], [:lit, 3] ] |
+      
+  Scenario Outline: Grouping with parentheses
+    When I ask for the parse tree for "<input>"
+    Then I should see the tree "<result>"
+    
+    Examples:
+      | input       | result                                       |
+      | (1 + 2) * 3 | [:*, [:+, [:lit, 1], [:lit, 2]], [:lit, 3] ] |
+      | 1 / (2 - 3) | [:/, [:lit, 1], [:-, [:lit, 2], [:lit, 3]] ] |
+      
+  Scenario Outline: Arrays
+    When I ask for the parse tree for "<input>"
+    Then I should see the tree "<result>"
+    
+    Examples:
+      | input    | result                          |
+      | []       | [:array ]                       |
+      | [ 2 ]    | [:array, [:lit, 2] ]            |
+      | [ 2, 3 ] | [:array, [:lit, 2], [:lit, 3] ] |
+
+  Scenario Outline: Objects
+    When I ask for the parse tree for "<input>"
+    Then I should see the tree "<result>"
+    
+    # TODO: need some with names as keys, when names are supported
+    Examples:
+      | input          | result                                        |
+      | {}             | [:object ]                                    |
+      | {"a": 2}       | [:object, [:keyval, [:lit, "a"], [:lit, 2]] ] |
+      | {"a": 2, 3: 4} | [:object, [:keyval, [:lit, "a"], [:lit, 2]], [:keyval, [:lit, 3], [:lit, 4]] ] |

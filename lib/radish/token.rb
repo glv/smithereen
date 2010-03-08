@@ -14,6 +14,10 @@ module Radish
       end
       defblock :infix, &blk
     end
+    
+    def to_msg
+      type.to_s =~ /^\w+$/ ? type.to_s : "'#{type}'"
+    end
 
     protected
 
@@ -29,7 +33,12 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
-    delegate :advance_if_looking_at, :expression, :to => :parser
+    delegate :advance_if_looking_at, 
+             :advance_if_looking_at!,
+             :expression, 
+             :next_token, 
+             :take_token, 
+        :to => :parser
     
     def to_msg
       if type.to_s == text

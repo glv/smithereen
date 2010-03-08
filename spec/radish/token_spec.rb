@@ -19,6 +19,21 @@ describe Radish::TokenClassMethods do
     end
   end
   
+  describe "#to_msg" do
+    # This is a heuristic that should result in the correct default behavior
+    # for most token types, but not all.
+    
+    it "returns the type alone if the type contains only word characters" do
+      mock(subject).type{:foo}.times(any_times)
+      subject.to_msg.should == "foo"
+    end
+    
+    it "returns the type in single quotes if the type contains any non-word characters" do
+      mock(subject).type{:'f+o'}.times(any_times)
+      subject.to_msg.should == "'f+o'"
+    end
+  end
+  
   describe "#prefix" do
     it "defines the :prefix method with the supplied block" do
       subject.send(:prefix) { 'bar' }

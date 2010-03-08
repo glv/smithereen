@@ -40,7 +40,7 @@ module RadishSamples
     def initialize(s)
       super(CalculatorLexer.new(s))
     end
-  
+    
     deftoken :integer, 1000 do
       def value
         @value ||= text.to_i
@@ -72,7 +72,7 @@ module RadishSamples
   
     deftoken :'(', 0 do
       prefix do
-        returning(expression) { advance_if_looking_at :')' }
+        returning(expression) { advance_if_looking_at! :')' }
       end
     end
   

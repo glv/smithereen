@@ -78,7 +78,27 @@ module RadishSamples
       returning(expression(0)) { advance_if_looking_at!(:')') }
     end
     
-    # prefix :function
+    # prefix :function do
+    #   new_scope
+    #
+    #   name = advance_if_looking_at(:name)
+    #   scope.define(name) if name
+    #
+    #   advance_if_looking_at! :'('
+    #   args = delimited_list(:',', :')') do
+    #     raise next_token, "Expected a parameter name" unless looking_at? :name
+    #     param = take_token
+    #     scope.define(param)
+    #     param
+    #   end
+    #
+    #   advance_if_looking_at! :'{'
+    #   body = statements()
+    #   advance_if_looking_at! :'}'
+    #
+    #   scope.pop
+    #   [:function name args body]
+    # end
     
     prefix :'[' do
       [:array] + delimited_list(:',', :']') { expression(0) }

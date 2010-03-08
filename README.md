@@ -108,6 +108,7 @@ this design before committing to it for the long term.
 * Reconsider whether to hide the `left` parameter to `infix`.
 * Names to reconsider: prefix, infix, extend_with_infixes, symbolize,
   symbol_module, lexer token, take_token, deftoken.
+* Revisit (again) the names advance_if_whatever and how those methods work.
 * Add notes and stats rake tasks.
 * Measure performance:
   * speed

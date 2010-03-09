@@ -71,6 +71,7 @@ module Radish
           name_module.scope = self
         end
       end 
+      
     end
     
     attr_reader :scope

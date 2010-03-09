@@ -42,6 +42,9 @@ module RadishSamples
     end
     
     def module_for_token(token)
+      # TODO: when scope is ready
+      # return scope.find(token.text) if token.type == :name
+      # and then remove :name from the special handling on the next line
       return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)
       super
     end
@@ -83,6 +86,7 @@ module RadishSamples
   
     def self.prefix(type, &prefix_blk)
       tok_module = deftoken(type)
+      # TODO: reserve in default prefix method
       prefix_blk = lambda{ [type, expression(70)] } unless block_given?
       tok_module.prefix &prefix_blk
     end    

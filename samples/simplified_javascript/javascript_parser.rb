@@ -34,6 +34,12 @@ end
 
 module RadishSamples
   class SimplifiedJavaScriptParser < Radish::Parser
+    include Radish::Scoping
+    
+    def initialize(source_lexer)
+      super
+      new_scope
+    end
     
     def module_for_token(token)
       return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)

@@ -18,20 +18,25 @@ module Radish
       @symbol_table ||= {}
     end
     
+    def self.new_token_module(type, lbp)
+      tok_module = Module.new do
+        extend TokenClassMethods
+        include TokenInstanceMethods
+        mattr_accessor :lbp
+        mattr_accessor :type
+      end
+      
+      tok_module.lbp = lbp
+      tok_module.type = type
+      tok_module
+    end
+    
     def self.deftoken(type, lbp=0, &blk)
       tok_module = symbol_table[type]
       if tok_module
         tok_module.lbp = lbp if lbp > tok_module.lbp
       else
-        tok_module = Module.new do
-          extend TokenClassMethods
-          include TokenInstanceMethods
-          mattr_accessor :lbp
-          mattr_accessor :type
-        end
-        
-        tok_module.lbp = lbp
-        tok_module.type = type
+        tok_module = new_token_module(type, lbp)
       end
       tok_module.module_eval(&blk) if block_given?
       symbol_table[type] = tok_module

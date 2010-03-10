@@ -1,3 +1,5 @@
+require 'active_support/core_ext/module/delegation'
+
 module Radish
   module Scoping
 
@@ -5,6 +7,8 @@ module Radish
       attr_reader :defs
       attr_reader :parent
       attr_reader :parser
+      
+      delegate :symbol_table, :to => :parser
       
       def initialize(parser, parent)
         @parser = parser
@@ -20,6 +24,9 @@ module Radish
           raise name, "Already #{t.reserved ? 'reserved' : 'defined'}" 
         end
         
+        # TODO: the goal here is to create a "variable token" module,
+        #       *and* to augment the existing token with the variable token
+        #       stuffs.  We're doing the former in store, but not the latter.
         store(name, false)
       end
       
@@ -29,13 +36,13 @@ module Radish
       def find(name)
         current = self
         while current
-          if name_module = defs[name]
-            return name_module
+          if current.defs.include?(name)
+            return current.defs[name]
           end
           current = current.parent
         end
         
-        return parser.symbol_table[name] || :name
+        return symbol_table.fetch(name){symbol_table[:name]}
       end
       
       # What is name? a token or a symbol module?
@@ -46,9 +53,11 @@ module Radish
         if name_module = defs[name.text]
           return if name_module.reserved
           # TODO: how could anything with type != :name get in there?
-          raise name, "Already defined" if name_module.type == :name
+          raise name, "Already defined"
         end
         
+        # TODO: I'm not at all sure that we need to do the "variable token" module
+        #       stuff in this one.
         store(name, true)
       end
 

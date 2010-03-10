@@ -61,6 +61,10 @@ module RadishSamples
     def statement
       if next_token.respond_to?(:stmt)
         # TODO: scope reserve.  Why?
+        #       I'll tell you why.  Because Crockford is illustrating a flexible
+        #       reserved word strategy, wherein a word can be used as a variable
+        #       within a scope if it's not also used as a control word in that
+        #       same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
         return take_token.stmt
       end
       

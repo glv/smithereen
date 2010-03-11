@@ -1,6 +1,8 @@
-if ENV['RUN_CODE_RUN'] == 'true'
-  system "bundle", "install", "--disable-shared-gems"
+def rcr?
+  ENV['RUN_CODE_RUN'] == 'true'
 end
+
+system("bundle", "install", "--disable-shared-gems") if rcr?
 
 begin
   # Try to require the preresolved locked set of gems.
@@ -72,7 +74,11 @@ begin
 
   namespace :cucumber do 
     Cucumber::Rake::Task.new(:progress) do |t|
-      t.cucumber_opts = %w{--format progress}
+      if rcr?
+        t.cucumber_opts = %w{--format pretty --color}
+      else
+        t.cucumber_opts = %w{--format progress}
+      end
     end
   end
 rescue LoadError

@@ -20,13 +20,14 @@ module Radish
       # It's a token.  But in here, we augment it into sort of a null symbol.
       # That null symbol is returned.
       def define(name)
-        if t = defs[name.text]
+        if t = defs[name.text.to_sym]
           raise name, "Already #{t.reserved ? 'reserved' : 'defined'}" 
         end
         
-        # TODO: the goal here is to create a "variable token" module,
-        #       *and* to augment the existing token with the variable token
-        #       stuffs.  We're doing the former in store, but not the latter.
+        # TODO: the goal here is to create a "binding token" module,
+        #       (Crockford calls it a "variable token") *and* to augment
+        #       the existing token with the variable token stuff.  We're
+        #       doing the former in store, but not the latter.
         store(name, false)
       end
       
@@ -35,14 +36,16 @@ module Radish
       # But the stored module-ish is returned.
       def find(name)
         current = self
+        key = name.to_sym
         while current
-          if current.defs.include?(name)
-            return current.defs[name]
+          if current.defs.include?(key)
+            return current.defs[key]
           end
           current = current.parent
         end
         
-        return symbol_table.fetch(name){symbol_table[:name]}
+        # TODO: use of :name here couples us to Parser too much?
+        return symbol_table.fetch(key){symbol_table[:name]}
       end
       
       # What is name? a token or a symbol module?
@@ -50,13 +53,12 @@ module Radish
       def reserve(name)
         # TODO: is the guard before calling reserved necessary?
         return if name.type != :name || (name.respond_to?(:reserved) && name.reserved)
-        if name_module = defs[name.text]
+        if name_module = defs[name.text.to_sym]
           return if name_module.reserved
-          # TODO: how could anything with type != :name get in there?
           raise name, "Already defined"
         end
         
-        # TODO: I'm not at all sure that we need to do the "variable token" module
+        # TODO: I'm not at all sure that we need to do the binding token module
         #       stuff in this one.
         store(name, true)
       end
@@ -68,13 +70,20 @@ module Radish
       protected
       
       def store(name, reserved)
+        defs[name.text.to_sym] = new_binding_module(reserved)
+      end
+      
+      def new_binding_module(reserved)
+        # TODO: would it be possible to dup symbol_table[:name] and add
+        #       reserved and scope, so we could just inherit the prefix
+        #       method from there?
         returning parser.new_token_module(:name, 0) do |name_module|
-          defs[name.text] = name_module
           name_module.module_eval do
             mattr_accessor :reserved
             mattr_accessor :scope
           
-            prefix {self}
+            # TODO: nasty coupling here. We shouldn't know about tree building.
+            prefix {[:name, self.text]}
           end
           name_module.reserved = reserved
           name_module.scope = self
@@ -83,7 +92,7 @@ module Radish
       
     end
     
-    attr_reader :scope
+    attr_accessor :scope
     
     def new_scope
       @scope = Scope.new(self, scope)

@@ -44,14 +44,14 @@ describe Radish::Scoping::Scope do
     it "raises 'Already defined' if the name is found but not reserved" do
       tok = Radish::LexerToken.new(:some_type, 'foo').extend Radish::TokenInstanceMethods
       mock(tok).reserved{false}
-      subject.defs['foo'] = tok
+      subject.defs[:foo] = tok
       lambda{subject.define tok}.should raise_error(Radish::ParseError, "Already defined: #{tok}")
     end
     
     it "raises 'Already reserved' if the name has been reserved" do
       tok = Radish::LexerToken.new(:some_type, 'foo').extend Radish::TokenInstanceMethods
       mock(tok).reserved{true}
-      subject.defs['foo'] = tok
+      subject.defs[:foo] = tok
       lambda{subject.define tok}.should raise_error(Radish::ParseError, "Already reserved: #{tok}")
     end
   end
@@ -66,30 +66,30 @@ describe Radish::Scoping::Scope do
     end
 
     it "returns the module directly if it has been defined" do
-      subject.defs['foo'] = :some_local_module
+      subject.defs[:foo] = :some_local_module
       subject.find('foo').should == :some_local_module
     end
     
     it "returns the module from the parent scope if it has not been defined locally" do
-      subject.parent.defs['foo'] = :some_parent_module
-      mock.proxy(subject.defs).include?('foo')
-      mock.proxy(subject.parent.defs)['foo']
+      subject.parent.defs[:foo] = :some_parent_module
+      mock.proxy(subject.defs).include?(:foo)
+      mock.proxy(subject.parent.defs)[:foo]
       subject.find('foo').should == :some_parent_module
     end
     
     it "returns the module from the symbol table if it's there but not in a scope" do
-      subject.parser.symbol_table['foo'] = :some_symbol_module
-      mock.proxy(subject.defs).include?('foo')
-      mock.proxy(subject.parent.defs).include?('foo')
-      mock.proxy(subject.parser.symbol_table).fetch('foo')
+      subject.parser.symbol_table[:foo] = :some_symbol_module
+      mock.proxy(subject.defs).include?(:foo)
+      mock.proxy(subject.parent.defs).include?(:foo)
+      mock.proxy(subject.parser.symbol_table).fetch(:foo)
       subject.find('foo').should == :some_symbol_module
     end
     
     it "returns the :name module from the symbol table if nothing else is found" do
       subject.parser.symbol_table[:name] = :some_name_module
-      mock.proxy(subject.defs).include?('foo')
-      mock.proxy(subject.parent.defs).include?('foo')
-      mock.proxy(subject.parser.symbol_table).fetch('foo')
+      mock.proxy(subject.defs).include?(:foo)
+      mock.proxy(subject.parent.defs).include?(:foo)
+      mock.proxy(subject.parser.symbol_table).fetch(:foo)
       mock.proxy(subject.parser.symbol_table)[:name]
       subject.find('foo').should == :some_name_module
     end
@@ -121,7 +121,7 @@ describe Radish::Scoping::Scope do
     it "returns immediately if the name has been reserved locally" do
       tok = Radish::LexerToken.new(:name, 'foo')
       mock(tok).reserved{false}
-      subject.defs['foo'] = mock!.reserved{true}.subject
+      subject.defs[:foo] = mock!.reserved{true}.subject
       dont_allow(subject).store
       subject.reserve(tok).should be_nil
     end
@@ -129,7 +129,7 @@ describe Radish::Scoping::Scope do
     it "raises an error if the name has been defined but not reserved locally" do
       tok = Radish::LexerToken.new(:name, 'foo').extend Radish::TokenInstanceMethods
       mock(tok).reserved{false}
-      subject.defs['foo'] = mock!.reserved{false}.subject
+      subject.defs[:foo] = mock!.reserved{false}.subject
       dont_allow(subject).store
       lambda{subject.reserve(tok)}.should raise_error(Radish::ParseError, "Already defined: #{tok}")
     end
@@ -151,5 +151,56 @@ describe Radish::Scoping::Scope do
   end
   
   describe "#store" do
+    subject { Scope.new(Object.new, nil) }
+    
+    it "creates a new token module, returns it, and stores it as a local define" do
+      tok = Radish::LexerToken.new(:name, 'some_name')
+      mock(subject).new_binding_module(false){:mock_module}
+      subject.send(:store, tok, false).should == :mock_module
+      subject.defs[:some_name].should == :mock_module
+    end
+  end
+  
+  describe "#new_binding_module" do
+    subject { Scope.new(Object.new, nil) }
+    
+    it "returns a new token module (with type :name and 0 binding power)" do
+      tok = Radish::LexerToken.new(:name, 'some_name')
+      stub(mock_module = Object.new) do |allow|
+        allow.module_eval
+        allow.reserved = false
+        allow.scope = subject
+      end
+      mock(subject.parser).new_token_module(:name, 0){mock_module}
+      subject.send(:new_binding_module, false).should == mock_module
+    end
+    
+    it "sets 'module.reserved' based on the passed 'reserved' parameter" do
+      tok = Radish::LexerToken.new(:name, 'some_name')
+      mock(mock_module = Object.new).reserved = 'some_reserved_value'
+      stub(mock_module) do |allow|
+        allow.module_eval
+        allow.scope = subject
+      end
+      stub(subject.parser).new_token_module{mock_module}
+      subject.send(:new_binding_module, 'some_reserved_value')
+    end        
+    
+    it "calls 'prefix {self}' in the module"
+    #   tok = Radish::LexerToken.new(:name, 'some_name')
+    #   mock(mock_module = Module.new).prefix
+    #   pending "I can't figure out how to test for the passed block with rr"
+    # end
+    
+    it "stores the scope object as the module's 'scope' value" do
+      tok = Radish::LexerToken.new(:name, 'some_name')
+      mock(mock_module = Object.new).scope = subject
+      stub(mock_module) do |allow|
+        allow.module_eval
+        allow.reserved = false
+      end
+      stub(subject.parser).new_token_module{mock_module}
+      subject.send(:new_binding_module, false)
+    end
   end
 end

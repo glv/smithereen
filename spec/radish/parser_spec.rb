@@ -295,6 +295,10 @@ describe Radish::Parser do
       end
     end
     
+    describe "#new_token_module" do
+      it "delegates to the class method"
+    end
+    
     describe "#module_for_token" do
       it "returns the module from the symbol table for type" do
         subject.symbol_table[:some_type] = :some_module

@@ -1,10 +1,13 @@
 $: << File.dirname(__FILE__) + '/../../lib'
 $: << File.dirname(__FILE__)
 require 'radish'
+require 'active_support/core_ext/module/delegation'
 
 module Radish::TokenInstanceMethods
   # TODO: Build a better way to inject such methods into TIM.
-  def delimited_list(separator, terminator, options={})
+  delegate :scope, :to => :parser
+  
+  def separated_list(separator, terminator, options={})
     result = []
     until looking_at?(terminator)
       loop do
@@ -16,6 +19,7 @@ module Radish::TokenInstanceMethods
     advance_if_looking_at! terminator
     result
   end
+  
 end
 
 module Radish::TokenClassMethods
@@ -42,29 +46,35 @@ module RadishSamples
     end
     
     def module_for_token(token)
-      # TODO: when scope is ready
-      # return scope.find(token.text) if token.type == :name
-      # and then remove :name from the special handling on the next line
-      return super(token, token.text.to_sym) if [:operator, :name].include?(token.type)
-      super
+      case token.type
+      when :name     then return scope.find(token.text)
+      when :operator then return super(token, token.text.to_sym) 
+      else                super
+      end
     end
     protected :module_for_token
     
+    # TODO: I shouldn't really need this once statements is working right.
     def parse_statement
       returning(statement) { advance_if_looking_at! END_TOKEN_TYPE }
     end
     
+    # TODO: I shouldn't really need this once statements is working right.
     def parse_expression
       parse
     end
     
+    # def parse
+    #   statements(:';', END_TOKEN_TYPE)
+    # end
+    
     def statement
       if next_token.respond_to?(:stmt)
-        # TODO: scope reserve.  Why?
-        #       I'll tell you why.  Because Crockford is illustrating a flexible
-        #       reserved word strategy, wherein a word can be used as a variable
-        #       within a scope if it's not also used as a control word in that
-        #       same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
+        # Why reserve here?  Because Crockford is illustrating a flexible
+        # reserved word strategy, wherein a word can be used as a variable
+        # within a scope if it's not also used as a control word in that
+        # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
+        scope.reserve(next_token)
         return take_token.stmt
       end
       
@@ -77,6 +87,25 @@ module RadishSamples
       end
     end
     
+    def statements(terminator)
+      concatenated_list(terminator) do
+        statement
+      end
+    end
+    
+    def block
+      advance_if_looking_at!(:'{').stmt
+    end
+    
+    def concatenated_list(terminator)
+      result = []
+      until looking_at?(terminator)
+        result << yield
+      end
+      advance_if_looking_at! terminator
+      result
+    end
+    
     def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
       unless [:left, :right].include?(options[:assoc])
         raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
@@ -87,11 +116,29 @@ module RadishSamples
       infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
       tok_module.infix &infix_blk
     end
+    
+    ASSIGNABLE_TYPES = [
+      :name,      # a()
+      :propref,   # a.b()
+      :lookup,    # a[1]()
+    ]
+    
+    def self.assignment(type)
+      infix(type, 10, :assoc => :right) do |left|
+        # TODO: raise a ParseError here, rather than a StandardError
+        raise "Bad lvalue" unless ASSIGNABLE_TYPES.include?(left.first)
+        [:assignment, type, left, expression(lbp-1)]
+      end
+    end
   
     def self.prefix(type, &prefix_blk)
       tok_module = deftoken(type)
-      # TODO: reserve in default prefix method
-      prefix_blk = lambda{ [type, expression(70)] } unless block_given?
+      unless block_given?
+        prefix_blk = lambda do
+          scope.reserve(self)
+          [type, expression(70)]
+        end
+      end
       tok_module.prefix &prefix_blk
     end    
   
@@ -107,14 +154,17 @@ module RadishSamples
     end
   
     # --------------------------------------------------- symbols and constants
-    # symbol :name
+    symbol :name do # TODO: fake symbol; don't like this.
+      [:name, text]
+    end
+    
     symbol :':'
     symbol :';'
     symbol :')'
     symbol :']'
     symbol :'}'
     symbol :','
-    # symbol :else
+    symbol :else
     
     # constant :true,  true
     # constant :false, false
@@ -142,11 +192,11 @@ module RadishSamples
     end
     
     prefix :'[' do
-      [:array] + delimited_list(:',', :']') { expression(0) }
+      [:array] + separated_list(:',', :']') { expression(0) }
     end
     
     prefix :'{' do
-      keyvals = delimited_list(:',', :'}') do
+      keyvals = separated_list(:',', :'}') do
         key = take_token
         raise key, "Bad property name" unless [:string, :number].include?(key.type)
         advance_if_looking_at! :':'
@@ -155,35 +205,36 @@ module RadishSamples
       [:object, *keyvals.flatten(1)]
     end
     
-    # TODO: while I was working on the other prefix tokens I plugged this in,
-    #       but it depends on scope and statements, and I'd rather tackle those
-    #       with smaller things before getting this to work.
-    # prefix :function do
-    #   new_scope
-    #
-    #   name = advance_if_looking_at(:name)
-    #   scope.define(name) if name
-    #
-    #   advance_if_looking_at! :'('
-    #   args = delimited_list(:',', :')') do
-    #     raise next_token, "Expected a parameter name" unless looking_at? :name
-    #     param = take_token
-    #     scope.define(param)
-    #     param
-    #   end
-    #
-    #   advance_if_looking_at! :'{'
-    #   body = statements()
-    #   advance_if_looking_at! :'}'
-    #
-    #   scope.pop
-    #   [:function name args body]
-    # end
+    prefix :function do
+      name_token = advance_if_looking_at(:name)
+      if name_token
+        scope.define(name_token)
+        name = name_token.prefix
+      end
+    
+      # Crockford's code had this at the beginning of the method.
+      # I think that's a bug.
+      new_scope
+    
+      advance_if_looking_at! :'('
+      args = separated_list(:',', :')') do
+        raise next_token, "Expected a parameter name" unless looking_at? :name
+        param = take_token
+        scope.define(param)
+        param.prefix
+      end
+    
+      advance_if_looking_at! :'{'
+      body = statements(:'}')
+    
+      scope.pop
+      [:function, name, args, body]
+    end
     
     # --------------------------------------------------------- infix operators
-    # assignment :'='
-    # assignment :'+='
-    # assignment :'-='
+    assignment :'='
+    assignment :'+='
+    assignment :'-='
     
     infix :'?',   20 do |left|
       middle = expression(0)
@@ -208,26 +259,70 @@ module RadishSamples
     infix :'*',   60
     infix :'/',   60
           
-    # TODO: not tested yet.
     infix :'.',   80 do |left|
       right = advance_if_looking_at(:name) or 
           raise next_token, "Expected a property name."
-      [:propref, left, right]
+      [:propref, left, right.prefix]
     end
 
     infix :'[',   80 do |left|
       returning([:lookup, left, expression(0)]) { advance_if_looking_at! :']' }
     end
 
+    CALLABLE_TYPES = [
+      :name,      # a()
+      :propref,   # a.b()
+      :lookup,    # a[1]()
+      :call,      # a()()
+      :function,  # (function(){})()
+      # TODO: how to distinguish between (function(){})() and function(){}()?
+    ]
+    
     infix :'(',   80 do |left|
-      # ??? raise if left is not something callable
-      [:call, left, delimited_list(:',', :')'){ expression(0) }]
+      # TODO: raise a ParseError here, rather than a StandardError
+      raise "Expected a function" unless CALLABLE_TYPES.include?(left.first)
+      [:call, left, separated_list(:',', :')'){ expression(0) }]
     end
     
     # -------------------------------------------------------------- statements
-    # stmt :'{'
-    # stmt :var
-    # stmt :if
+    stmt :'{' do
+      new_scope
+      returning([:block, *statements(:'}')]) do
+        scope.pop
+      end
+    end
+
+    stmt :var do
+      decls = separated_list(:',', :';') do
+        raise next_token, "Expected a new variable name" unless looking_at?(:name)
+        varname = take_token
+        scope.define varname
+        if advance_if_looking_at :'='
+          [varname.prefix, expression(0)]
+        else
+          [varname.prefix]
+        end
+      end
+      
+      # TODO: raise a ParseError rather than a StandardError
+      raise "Expected a variable name in var declaration" if decls.empty?
+      [:var, *decls]
+    end
+    
+    stmt :if do
+      advance_if_looking_at! :'('
+      test = expression(0)
+      advance_if_looking_at! :')'
+      if_branch = block
+      if looking_at? :else
+        scope.reserve next_token
+        advance_if_looking_at! :else
+        else_branch = looking_at?(:if) ? statement : block
+        [:if, test, if_branch, else_branch]
+      else
+        [:if, test, if_branch]
+      end
+    end
     
     stmt :return do
       returning [:return] do |result|
@@ -247,7 +342,12 @@ module RadishSamples
       [:break]
     end
     
-    # stmt :while
+    stmt :while do
+      advance_if_looking_at! :'('
+      test = expression(0)
+      advance_if_looking_at! :')'
+      [:while, test, block]
+    end
     
   end
 end

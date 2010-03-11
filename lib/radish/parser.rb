@@ -31,6 +31,10 @@ module Radish
       tok_module
     end
     
+    def new_token_module(type, lbp)
+      self.class.new_token_module(type, lbp)
+    end
+    
     def self.deftoken(type, lbp=0, &blk)
       tok_module = symbol_table[type]
       if tok_module

@@ -18,6 +18,10 @@ module Radish
     def to_msg
       type.to_s =~ /^\w+$/ ? type.to_s : "'#{type}'"
     end
+    
+    def to_s
+      to_msg
+    end
 
     protected
 
@@ -33,11 +37,17 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
+    # TODO: I keep forgetting to put things here.  Is there a better way?
     delegate :advance_if_looking_at, 
              :advance_if_looking_at!,
+             :block,
+             :concatenated_list,
              :expression, 
              :looking_at?,
-             :next_token, 
+             :new_scope,
+             :next_token,
+             :statement,
+             :statements, 
              :take_token, 
         :to => :parser
     

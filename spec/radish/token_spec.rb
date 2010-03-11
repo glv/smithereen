@@ -19,6 +19,10 @@ describe Radish::TokenClassMethods do
     end
   end
   
+  describe "#to_s" do
+    it "delegates to #to_msg"
+  end
+  
   describe "#to_msg" do
     # This is a heuristic that should result in the correct default behavior
     # for most token types, but not all.

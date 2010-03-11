@@ -1,4 +1,13 @@
-require 'rubygems'
+begin
+  # Try to require the preresolved locked set of gems.
+  require File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fall back on doing an unlocked resolve at runtime.
+  require "rubygems"
+  require "bundler"
+  Bundler.setup
+end
+
 require 'rake'
 
 begin
@@ -11,7 +20,7 @@ begin
     gem.homepage = "http://github.com/glv/radish"
     gem.authors = ["Glenn Vanderburg"]
     
-    gem.add_runtime_dependency     "activesupport", ">= 3.0.0.beta1"
+    gem.add_runtime_dependency     "activesupport", ">= 3.0.0.beta"
     
     gem.add_development_dependency "cucumber",      ">= 0.6.3"
     gem.add_development_dependency "jeweler",       ">= 1.4.0"
@@ -68,7 +77,11 @@ end
 
 # task :examples => :check_dependencies
 
-task :default => ['spec:examples', 'cucumber:progress']
+if ENV['RUN_CODE_RUN'] == 'true'
+  task :default => ['install_gems', 'spec:examples', 'cucumber:progress']
+else
+  task :default => ['spec:examples', 'cucumber:progress']
+end
 
 task :verbose => ['spec:doc_format', 'spec:examples', 'cucumber']
 
@@ -80,4 +93,8 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "radish #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
+task :install_gems do
+  sh "bundle install"
 end

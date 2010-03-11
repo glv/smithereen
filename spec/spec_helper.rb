@@ -1,4 +1,13 @@
-require 'rubygems'
+begin
+  # Try to require the preresolved locked set of gems.
+  require File.expand_path('../.bundle/environment', __FILE__)
+rescue LoadError
+  # Fall back on doing an unlocked resolve at runtime.
+  require "rubygems"
+  require "bundler"
+  Bundler.setup
+end
+
 require 'rspec'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}

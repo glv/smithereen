@@ -96,5 +96,5 @@ Rake::RDocTask.new do |rdoc|
 end
 
 task :install_gems do
-  sh "bundle install"
+  sh "bundle", "install", require File.expand_path('../.bundle/gems', __FILE__)
 end

@@ -215,7 +215,8 @@ module RadishSamples
         advance_if_looking_at! :':'
         [key.prefix, expression(0)]
       end
-      [:object, *keyvals.flatten(1)]
+      # Could use flatten(1) in 1.8.7 and above
+      [:object] + keyvals.inject([]){|accum, keyval| accum += keyval}
     end
     
     prefix :function do

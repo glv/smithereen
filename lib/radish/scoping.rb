@@ -83,7 +83,7 @@ module Radish
             mattr_accessor :scope
           
             # TODO: nasty coupling here. We shouldn't know about tree building.
-            prefix {[:name, self.text]}
+            prefix {[:name, text]}
           end
           name_module.reserved = reserved
           name_module.scope = self

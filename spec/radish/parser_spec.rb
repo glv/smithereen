@@ -296,7 +296,10 @@ describe Radish::Parser do
     end
     
     describe "#new_token_module" do
-      it "delegates to the class method"
+      it "delegates to the class method" do
+        mock(subject.class).new_token_module(:some_type, :some_lbp){:some_module}
+        subject.new_token_module(:some_type, :some_lbp).should == :some_module
+      end
     end
     
     describe "#module_for_token" do

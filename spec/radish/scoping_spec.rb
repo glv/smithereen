@@ -162,7 +162,7 @@ describe Radish::Scoping::Scope do
   end
   
   describe "#new_binding_module" do
-    subject { Scope.new(Object.new, nil) }
+    subject { Scope.new(Radish::Parser.new(nil), nil) }
     
     it "returns a new token module (with type :name and 0 binding power)" do
       tok = Radish::LexerToken.new(:name, 'some_name')
@@ -186,11 +186,12 @@ describe Radish::Scoping::Scope do
       subject.send(:new_binding_module, 'some_reserved_value')
     end        
     
-    it "calls 'prefix {self}' in the module"
-    #   tok = Radish::LexerToken.new(:name, 'some_name')
-    #   mock(mock_module = Module.new).prefix
-    #   pending "I can't figure out how to test for the passed block with rr"
-    # end
+    it "calls 'prefix {[:name, text]}' in the module" do
+      binding_module = subject.send(:new_binding_module, true)
+      mock_token = mock!.text{"foo"}.subject
+      mock_token.extend binding_module
+      mock_token.prefix.should == [:name, "foo"]
+    end
     
     it "stores the scope object as the module's 'scope' value" do
       tok = Radish::LexerToken.new(:name, 'some_name')

@@ -100,15 +100,22 @@ this design before committing to it for the long term.
 ## To do
 
 * Set up bundler and get this running on RCR.
-* Finish porting the sample JavaScript parser from Crockford's
-  paper.
+* Write syntax error tests for the JavaScript parser.
 * Add some kind of tracing output to make it easier to understand
   (and debug) the algorithm.
 * Reusable example groups for lexers and lexer tokens.
-* Reconsider whether to hide the `left` parameter to `infix`.
-* Names to reconsider: prefix, infix, extend_with_infixes, symbolize,
-  symbol_module, lexer token, take_token, deftoken.
-* Revisit (again) the names advance_if_whatever and how those methods work.
+* Refactor scoping.
+* Pull most of the grammar definition methods out of the JS
+  parser and put them where they can be reused (and write tests
+  for them).
+* Figure out a good way to unit-test prefix, infix, and stmt methods.
+* Address all the TODO and ??? comments
+* Revisit:
+  * Whether to hide the `left` parameter to `infix`
+  * Whether to raise the token or have another error strategy
+  * Names: prefix, infix, extend_with_infixes, symbolize,
+    symbol_module, lexer token, take_token, deftoken.
+  * The names advance_if_whatever and how those methods work.
 * Add notes and stats rake tasks.
 * Measure performance:
   * speed

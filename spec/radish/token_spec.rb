@@ -20,7 +20,10 @@ describe Radish::TokenClassMethods do
   end
   
   describe "#to_s" do
-    it "delegates to #to_msg"
+    it "delegates to #to_msg" do
+      mock(subject).to_msg{"some msg"}
+      subject.to_s.should == "some msg"
+    end
   end
   
   describe "#to_msg" do

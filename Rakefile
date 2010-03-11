@@ -96,5 +96,5 @@ Rake::RDocTask.new do |rdoc|
 end
 
 task :install_gems do
-  sh "bundle", "install", File.expand_path('../.bundle/gems', __FILE__)
+  sh "bundle", "install", "--disable-shared-gems"
 end

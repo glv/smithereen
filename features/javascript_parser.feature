@@ -11,11 +11,15 @@ Feature: JavaScript Parser
     Then I should see the tree "<result>"
     
     Examples:
-      | input | result       |
-      | 2     | [:lit, 2   ] |
-      | 3.14  | [:lit, 3.14] |
-      | "a"   | [:lit, "a" ] |
-      | 'a'   | [:lit, "a" ] |
+      | input | result                    |
+      | 2     | [:lit, 2   ]              |
+      | 3.14  | [:lit, 3.14]              |
+      | "a"   | [:lit, "a" ]              |
+      | 'a'   | [:lit, "a" ]              |
+      | true  | [:lit, true]              |
+      | false | [:lit, false]             |
+      | null  | [:lit, nil]               |
+      | pi    | [:lit, 3.141592653589793] |
       
   Scenario Outline: Unary operators
     When I ask for the parse tree for expression "<input>"
@@ -165,14 +169,15 @@ Feature: JavaScript Parser
     Then I should see the tree "<result>"
     
     Examples:
-      | input      | result                                                          |
-      | break;     | [:break ]                                                       |
-      | return;    | [:return]                                                       |          
-      | return 2;  | [:return, [:lit, 2] ]                                           |
-      | a = 3;     | [:assignment, :'=', [:name, "a"], [:lit, 3] ]                   |
-      | {}         | [:block ]                                                       |
-      | {a();}     | [:block, [:call, [:name, "a"], []] ]                            |
-      | {a();b();} | [:block, [:call, [:name, "a"], []], [:call, [:name, "b"], []] ] |
+      | input          | result                                                          |
+      | {break;}       | [:block, [:break ] ]                                            |
+      | {return;}      | [:block, [:return] ]                                            |
+      | {return 2;}    | [:block, [:return, [:lit, 2]] ]                                 |
+      | {return this;} | [:block, [:return, [:name, "this"]] ]                           |
+      | a = 3;         | [:assignment, :'=', [:name, "a"], [:lit, 3] ]                   |
+      | {}             | [:block ]                                                       |
+      | {a();}         | [:block, [:call, [:name, "a"], []] ]                            |
+      | {a();b();}     | [:block, [:call, [:name, "a"], []], [:call, [:name, "b"], []] ] |
 
   Scenario Outline: Variable declarations
     When I ask for the parse tree for statement "<input>"

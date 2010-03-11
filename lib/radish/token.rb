@@ -48,6 +48,7 @@ module Radish
              :next_token,
              :statement,
              :statements, 
+             :symbol_table,
              :take_token, 
         :to => :parser
     

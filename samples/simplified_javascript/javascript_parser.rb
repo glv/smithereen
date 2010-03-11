@@ -106,6 +106,22 @@ module RadishSamples
       result
     end
     
+    def self.symbol(type, bp=0, &prefix_blk)
+      returning(deftoken(type, bp)) do |tok_module|
+        tok_module.prefix(&prefix_blk) if block_given?
+      end
+    end
+    
+    def self.constant(type, value)
+      symbol(type) do
+        scope.reserve self
+        # TODO: Crockford stores the value in the module, presumably for diagnostic purposes.
+        #       We're just maintaining it through closure semantics in this prefix proc.
+        # TODO: here we go again with the tree building in what's supposed to be reusable code
+        [:lit, value]
+      end
+    end
+    
     def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
       unless [:left, :right].include?(options[:assoc])
         raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
@@ -142,11 +158,6 @@ module RadishSamples
       tok_module.prefix &prefix_blk
     end    
   
-    def self.symbol(type, bp=0, &prefix_blk)
-      tok_module = deftoken(type, bp)
-      tok_module.prefix(&prefix_blk) if block_given?
-    end
-    
     def self.stmt(type, &stmt_blk)
       deftoken(type) do
         stmt &stmt_blk
@@ -165,13 +176,15 @@ module RadishSamples
     symbol :'}'
     symbol :','
     symbol :else
+    symbol :this do
+      scope.reserve(self)
+      [:name, 'this']
+    end    
     
-    # constant :true,  true
-    # constant :false, false
-    # constant :null,  nil
-    # constant :pi,    3.141592653589793
-    
-    # symbol :this
+    constant :true,  true
+    constant :false, false
+    constant :null,  nil
+    constant :pi,    3.141592653589793
     
     symbol :number do
       [:lit, text =~ /\./ ? text.to_f : text.to_i]
@@ -328,17 +341,13 @@ module RadishSamples
       returning [:return] do |result|
         result << expression(0) unless looking_at? :';'
         advance_if_looking_at! :';'
-        # TODO: remove '|| looking_at?(END_TOKEN_TYPE) when blocks are supported.
-        #       return should only be permitted in a block.
-        raise next_token, "Unreachable statement" unless looking_at?(:'}') || looking_at?(END_TOKEN_TYPE)
+        raise next_token, "Unreachable statement" unless looking_at?(:'}')
       end
     end
     
     stmt :break do
       advance_if_looking_at! :';'
-      # TODO: remove '|| looking_at?(END_TOKEN_TYPE) when blocks are supported.
-      #       break should only be permitted in a block.
-      raise next_token, "Unreachable statement" unless looking_at?(:'}') || looking_at?(END_TOKEN_TYPE)
+      raise next_token, "Unreachable statement" unless looking_at?(:'}')
       [:break]
     end
     

@@ -1,6 +1,6 @@
 source :gemcutter
 
-path File.expand_path('../vendor/gems', __FILE__)
+# path File.expand_path('../vendor/gems', __FILE__)
 
 gem 'activesupport', '>= 3.0.pre'
 

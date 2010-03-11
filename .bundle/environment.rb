@@ -141,31 +141,31 @@ end
 
 module Bundler
   LOCKED_BY    = '0.9.10'
-  FINGERPRINT  = "c1610ab6a331a289051aac4c921b0ae4f87b76db"
+  FINGERPRINT  = "ac7099df2e749367d99a7b36b0f9386109ee2752"
   AUTOREQUIRES = {:test=>[["rcov", false], ["rake", false], ["rr", false], ["rspec", false], ["cucumber", false]], :default=>[["activesupport", false]], :release=>[["jeweler", false]]}
   SPECS        = [
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/builder-2.1.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/builder-2.1.2.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/i18n-0.3.5/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/i18n-0.3.5.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/json_pure-1.2.3/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/json_pure-1.2.3.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/json_pure-1.2.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/json_pure-1.2.2.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/git-1.2.5/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/git-1.2.5.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rcov-0.9.8/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rcov-0.9.8.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rubyforge-2.0.4/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rubyforge-2.0.4.gemspec"},
-        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%global/gems/rake-0.8.7/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%global/specifications/rake-0.8.7.gemspec"},
-        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/diff-lcs-1.1.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/diff-lcs-1.1.2.gemspec"},
-        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/memcache-client-1.7.8/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/memcache-client-1.7.8.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/polyglot-0.3.0/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/polyglot-0.3.0.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/treetop-1.4.4/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/treetop-1.4.4.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/tzinfo-0.3.17/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/tzinfo-0.3.17.gemspec"},
-        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/activesupport-3.0.0.beta/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/activesupport-3.0.0.beta.gemspec"},
-        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/term-ansicolor-1.0.4/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/term-ansicolor-1.0.4.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%global/gems/rake-0.8.7/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%global/specifications/rake-0.8.7.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/memcache-client-1.7.8/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/memcache-client-1.7.8.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/diff-lcs-1.1.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/diff-lcs-1.1.2.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rr-0.10.10/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rr-0.10.10.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/gemcutter-0.5.0/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/gemcutter-0.5.0.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/jeweler-1.4.0/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/jeweler-1.4.0.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/rspec-core-2.0.0.beta.3/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/rspec-core-2.0.0.beta.3.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/rspec-expectations-2.0.0.beta.3/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/rspec-expectations-2.0.0.beta.3.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/rspec-mocks-2.0.0.beta.3/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/rspec-mocks-2.0.0.beta.3.gemspec"},
-        {:load_paths=>["/Users/glv/.bundle/ruby/1.8/gems/rspec-2.0.0.beta.3/lib"], :loaded_from=>"/Users/glv/.bundle/ruby/1.8/specifications/rspec-2.0.0.beta.3.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/term-ansicolor-1.0.4/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/term-ansicolor-1.0.4.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rspec-core-2.0.0.beta.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rspec-core-2.0.0.beta.2.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rspec-expectations-2.0.0.beta.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rspec-expectations-2.0.0.beta.2.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rspec-mocks-2.0.0.beta.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rspec-mocks-2.0.0.beta.2.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/rspec-2.0.0.beta.2/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/rspec-2.0.0.beta.2.gemspec"},
         {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/cucumber-0.6.3/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/cucumber-0.6.3.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/tzinfo-0.3.16/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/tzinfo-0.3.16.gemspec"},
+        {:load_paths=>["/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/gems/activesupport-3.0.0.beta/lib"], :loaded_from=>"/Users/glv/.rvm/gems/ruby-1.8.7-p249%radishdev/specifications/activesupport-3.0.0.beta.gemspec"},
       ].map do |hash|
     spec = eval(File.read(hash[:loaded_from]), binding, hash[:loaded_from])
     spec.loaded_from = hash[:loaded_from]

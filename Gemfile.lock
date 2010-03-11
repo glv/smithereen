@@ -34,7 +34,7 @@ specs:
 - i18n: 
     version: 0.3.5
 - json_pure: 
-    version: 1.2.3
+    version: 1.2.2
 - git: 
     version: 1.2.5
 - rcov: 
@@ -45,35 +45,38 @@ specs:
     version: 0.3.0
 - treetop: 
     version: 1.4.4
-- diff-lcs: 
-    version: 1.1.2
-- memcache-client: 
-    version: 1.7.8
 - rake: 
     version: 0.8.7
-- term-ansicolor: 
-    version: 1.0.4
+- memcache-client: 
+    version: 1.7.8
+- diff-lcs: 
+    version: 1.1.2
 - rr: 
     version: 0.10.10
 - gemcutter: 
     version: 0.5.0
 - jeweler: 
     version: 1.4.0
+- term-ansicolor: 
+    version: 1.0.4
 - rspec-core: 
-    version: 2.0.0.beta.3
+    version: 2.0.0.beta.2
 - rspec-expectations: 
-    version: 2.0.0.beta.3
+    version: 2.0.0.beta.2
 - rspec-mocks: 
-    version: 2.0.0.beta.3
+    version: 2.0.0.beta.2
 - rspec: 
-    version: 2.0.0.beta.3
+    version: 2.0.0.beta.2
 - cucumber: 
     version: 0.6.3
 - tzinfo: 
-    version: 0.3.17
+    version: 0.3.16
 - activesupport: 
     version: 3.0.0.beta
-hash: c1610ab6a331a289051aac4c921b0ae4f87b76db
+hash: ac7099df2e749367d99a7b36b0f9386109ee2752
 sources: 
 - Rubygems: 
     uri: http://gemcutter.org
+- Path: 
+    path: !ruby/object:Pathname 
+      path: /Users/glv/Projects/OSS/radish/vendor/gems

@@ -19,5 +19,6 @@ rdoc
 pkg
 .rvmrc
 vendor/gems
+.bundle
 
 ## PROJECT::SPECIFIC

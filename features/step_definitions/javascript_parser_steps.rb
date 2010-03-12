@@ -1,8 +1,9 @@
 Given /^I have loaded the sample JavaScript parser$/ do
   require File.dirname(__FILE__) + '/../../samples/simplified_javascript/javascript_lexer'
   require File.dirname(__FILE__) + '/../../samples/simplified_javascript/javascript_parser'
-  @lexer_class  = RadishSamples::SimplifiedJavaScriptLexer
-  @parser_class = RadishSamples::SimplifiedJavaScriptParser
+  @lexer_class   = RadishSamples::SimplifiedJavaScriptLexer
+  @parser_class  = RadishSamples::SimplifiedJavaScriptParser
+  @grammar_class = RadishSamples::SimplifiedJavaScriptGrammar
 end
 
 When /^I define the name "([^\"]*)"$/ do |name|
@@ -11,7 +12,7 @@ When /^I define the name "([^\"]*)"$/ do |name|
 end
 
 When /^I ask for the parse tree for (\w+) "(.*)"$/ do |construct_type, js_source|
-  parser = @parser_class.new(@lexer_class.new(js_source))
+  parser = @parser_class.new(@grammar_class.new, @lexer_class.new(js_source))
   (@names_to_define||[]).each{|name| parser.scope.define(Radish::LexerToken.new(:name, name))}
   
   begin

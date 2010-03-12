@@ -4,20 +4,6 @@ require 'active_support/core_ext/module/delegation'
 module Radish::TokenInstanceMethods
   # TODO: Build a better way to inject such methods into TIM.
   delegate :scope, :to => :parser
-
-  def separated_list(separator, terminator, options={})
-    result = []
-    until looking_at?(terminator)
-      loop do
-        result << yield
-        advance_if_looking_at separator or break
-        break if options[:allow_extra] && looking_at?(terminator)
-      end
-    end
-    advance_if_looking_at! terminator
-    result
-  end
-
 end
 
 module Radish::TokenClassMethods
@@ -35,96 +21,8 @@ module Radish::TokenClassMethods
 end
 
 module RadishSamples
-  class SimplifiedJavaScriptParser < Radish::Parser
-    include Radish::Scoping
-
-    def initialize(source_lexer)
-      super
-      new_scope
-    end
-
-    def module_for_token(token)
-      case token.type
-      when :name     then return scope.find(token.text)
-      when :operator then return super(token, token.text.to_sym)
-      else                super
-      end
-    end
-    protected :module_for_token
-
-    def parse_statement
-      returning(statement) { advance_if_looking_at! END_TOKEN_TYPE }
-    end
-
-    def parse
-      statements(END_TOKEN_TYPE)
-    end
-
-    def statement
-      if next_token.respond_to?(:stmt)
-        # Why reserve here?  Because Crockford is illustrating a flexible
-        # reserved word strategy, wherein a word can be used as a variable
-        # within a scope if it's not also used as a control word in that
-        # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
-        scope.reserve(next_token)
-        return take_token.stmt
-      end
-
-      returning expression(0) do |expr|
-        # TODO: apparently only assignments and (for some reason) expressions
-        #       starting with '(' are allowed as statements.  But for now that
-        #       will mess up our testing.
-        # raise error unless expr is an assignment or starts with '('
-        advance_if_looking_at! :';'
-      end
-    end
-
-    def statements(terminator)
-      concatenated_list(terminator) do
-        statement
-      end
-    end
-
-    def block
-      advance_if_looking_at!(:'{').stmt
-    end
-
-    def concatenated_list(terminator)
-      result = []
-      until looking_at?(terminator)
-        result << yield
-      end
-      advance_if_looking_at! terminator
-      result
-    end
-
-    def self.symbol(type, bp=0, &prefix_blk)
-      returning(deftoken(type, bp)) do |tok_module|
-        tok_module.prefix(&prefix_blk) if block_given?
-      end
-    end
-
-    def self.constant(type, value)
-      symbol(type) do
-        scope.reserve self
-        # TODO: Crockford stores the value in the module, presumably for diagnostic purposes.
-        #       We're just maintaining it through closure semantics in this prefix proc.
-        # TODO: here we go again with the tree building in what's supposed to be reusable code
-        [:lit, value]
-      end
-    end
-
-    def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
-      unless [:left, :right].include?(options[:assoc])
-        raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
-      end
-      rbp = (options[:associativity] == :left) ? lbp : lbp - 1
-
-      tok_module = deftoken(type, lbp)
-      infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
-      tok_module.infix &infix_blk
-    end
-
+  class SimplifiedJavaScriptGrammar < Radish::Grammar
+    
     ASSIGNABLE_TYPES = [
       :name,      # a()
       :propref,   # a.b()
@@ -139,20 +37,17 @@ module RadishSamples
       end
     end
 
-    def self.prefix(type, &prefix_blk)
-      tok_module = deftoken(type)
-      unless block_given?
-        prefix_blk = lambda do
-          scope.reserve(self)
-          [type, expression(70)]
-        end
-      end
-      tok_module.prefix &prefix_blk
-    end
-
     def self.stmt(type, &stmt_blk)
       deftoken(type) do
         stmt &stmt_blk
+      end
+    end
+    
+    def module_for_token(token)
+      case token.type
+      when :name     then return parser.scope.find(token.text)
+      when :operator then return super(token, token.text.to_sym)
+      else                super
       end
     end
 
@@ -355,4 +250,52 @@ module RadishSamples
     end
 
   end
+  
+  class SimplifiedJavaScriptParser < Radish::Parser
+    include Radish::Scoping
+
+    def initialize(grammar, source_lexer)
+      super
+      new_scope
+    end
+
+    def parse_statement
+      returning(statement) { advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE }
+    end
+
+    def parse
+      statements(Grammar::END_TOKEN_TYPE)
+    end
+
+    def statement
+      if next_token.respond_to?(:stmt)
+        # Why reserve here?  Because Crockford is illustrating a flexible
+        # reserved word strategy, wherein a word can be used as a variable
+        # within a scope if it's not also used as a control word in that
+        # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
+        scope.reserve(next_token)
+        return take_token.stmt
+      end
+
+      returning expression(0) do |expr|
+        # TODO: apparently only assignments and (for some reason) expressions
+        #       starting with '(' are allowed as statements.  But for now that
+        #       will mess up our testing.
+        # raise error unless expr is an assignment or starts with '('
+        advance_if_looking_at! :';'
+      end
+    end
+
+    def statements(terminator)
+      concatenated_list(terminator) do
+        statement
+      end
+    end
+
+    def block
+      advance_if_looking_at!(:'{').stmt
+    end
+
+  end
+      
 end

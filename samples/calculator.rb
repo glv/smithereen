@@ -24,11 +24,8 @@ module RadishSamples
       end
     end
   end
-
-  class Calculator < Radish::Parser
-    def initialize(s)
-      super(CalculatorLexer.new(s))
-    end
+  
+  class CalculatorGrammar < Radish::Grammar
     
     deftoken :integer, 1000 do
       def value
@@ -66,5 +63,12 @@ module RadishSamples
     end
   
     deftoken :')', 0
+
+  end
+
+  class Calculator < Radish::Parser
+    def initialize(s)
+      super(CalculatorGrammar.new, CalculatorLexer.new(s))
+    end    
   end
 end

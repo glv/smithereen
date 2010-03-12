@@ -1,6 +1,7 @@
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/returning'
 require 'radish/errors'
+require 'radish/grammar'
 require 'radish/lexer_token'
 require 'radish/lexer'
 require 'radish/token'

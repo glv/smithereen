@@ -1,59 +1,26 @@
-require 'active_support/core_ext/module/attribute_accessors'
+require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/returning'
 require 'radish/token'
 
 module Radish
   class Parser
-    END_TOKEN_TYPE = :"(end)"
     
-    def self.inherited(klass)
-      klass.deftoken(END_TOKEN_TYPE, 0) do
-        def to_msg; 'end of input'; end
-        prefix { raise self, "Unexpected end of input" }
-      end
-    end
-    
-    # TODO: should use class_inheritable_accessor
-    def self.symbol_table
-      @symbol_table ||= {}
-    end
-    
-    def self.new_token_module(type, lbp)
-      tok_module = Module.new do
-        extend TokenClassMethods
-        include TokenInstanceMethods
-        mattr_accessor :lbp
-        mattr_accessor :type
-      end
-      
-      tok_module.lbp = lbp
-      tok_module.type = type
-      tok_module
-    end
-    
-    def self.deftoken(type, lbp=0, &blk)
-      tok_module = symbol_table[type]
-      if tok_module
-        tok_module.lbp = lbp if lbp > tok_module.lbp
-      else
-        tok_module = new_token_module(type, lbp)
-      end
-      tok_module.module_eval(&blk) if block_given?
-      symbol_table[type] = tok_module
-    end
-    
+    attr_reader :grammar
     attr_reader :lexer
     
-    def initialize(source_lexer)
-      @lexer = source_lexer
-    end
+    delegate :symbol_table, 
+             :symbolize,
+        :to => :grammar
     
-    def symbol_table
-      self.class.symbol_table
+    def initialize(grammar, source_lexer)
+      @grammar = grammar
+      @lexer   = source_lexer
+
+      grammar.parser = self
     end
     
     def parse_expression
-      returning(expression) { advance_if_looking_at! END_TOKEN_TYPE }
+      returning(expression) { advance_if_looking_at! Grammar::END_TOKEN_TYPE }
     end
     
     def parse
@@ -88,6 +55,28 @@ module Radish
       extend_with_infixes(rbp, start_expression)
     end
     
+    def concatenated_list(terminator)
+      result = []
+      until looking_at?(terminator)
+        result << yield
+      end
+      advance_if_looking_at! terminator
+      result
+    end
+
+    def separated_list(separator, terminator, options={})
+      result = []
+      until looking_at?(terminator)
+        loop do
+          result << yield
+          advance_if_looking_at separator or break
+          break if options[:allow_extra] && looking_at?(terminator)
+        end
+      end
+      advance_if_looking_at! terminator
+      result
+    end
+    
     protected
     
     def extend_with_infixes(rbp, sub_expression)
@@ -98,24 +87,11 @@ module Radish
     attr_writer :next_token
     
     def next_token
-      @next_token ||= symbolize(lexer.take_token || LexerToken.new(END_TOKEN_TYPE, ''))
+      @next_token ||= symbolize(lexer.take_token || LexerToken.new(Grammar::END_TOKEN_TYPE, ''))
     end
     
     def take_token
       returning(next_token) { self.next_token = nil }
-    end
-    
-    def module_for_token(token, type=token.type)
-      symbol_table.fetch(type) do
-        raise ParseError.new("Unrecognized token type from lexer", token)
-      end
-    end
-    
-    def symbolize(token)
-      returning token do
-        token.extend(module_for_token(token))
-        token.parser = self
-      end
     end
     
   end

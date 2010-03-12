@@ -162,7 +162,8 @@ describe Radish::Scoping::Scope do
   end
   
   describe "#new_binding_module" do
-    subject { Scope.new(Radish::Parser.new(nil), nil) }
+    class MockGrammar; attr_accessor :parser; end
+    subject { Scope.new(Radish::Parser.new(MockGrammar.new, nil), nil) }
     
     it "returns a new token module (with type :name and 0 binding power)" do
       tok = Radish::LexerToken.new(:name, 'some_name')
@@ -172,7 +173,7 @@ describe Radish::Scoping::Scope do
         allow.scope = subject
       end
       mock(mock_module).dup{mock_module}
-      subject.parser.symbol_table[:name] = mock_module
+      mock(subject.parser).symbol_table{ {:name => mock_module} }
       subject.send(:new_binding_module, false).should == mock_module
     end
     
@@ -184,7 +185,7 @@ describe Radish::Scoping::Scope do
         allow.scope = subject
       end
       mock(mock_module).dup{mock_module}
-      subject.parser.symbol_table[:name] = mock_module
+      mock(subject.parser).symbol_table{ {:name => mock_module} }
       subject.send(:new_binding_module, 'some_reserved_value')
     end        
     
@@ -196,7 +197,7 @@ describe Radish::Scoping::Scope do
         allow.reserved = false
       end
       mock(mock_module).dup{mock_module}
-      subject.parser.symbol_table[:name] = mock_module
+      mock(subject.parser).symbol_table{ {:name => mock_module} }
       subject.send(:new_binding_module, false)
     end
   end

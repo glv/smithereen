@@ -1,6 +1,3 @@
-$: << File.dirname(__FILE__) + '/../lib'
-$: << File.dirname(__FILE__)
-
 require 'rubygems'
 require 'active_support/core_ext/object/returning'
 require 'radish'
@@ -16,22 +13,14 @@ module RadishSamples
       when /\A\s+/m
         move $&.size
         produce_next_token
-      when /\A\d+/
-        make_token(:integer, $&)
-      when /\A\+/
-        make_token(:+, $&)
-      when /\A-/
-        make_token(:-, $&)
-      when /\A\*/
-        make_token(:*, $&)
-      when /\A\//
-        make_token(:/, $&)
-      when /\A\^/
-        make_token(:'^', $&)
-      when /\A\(/
-        make_token(:'(', $&)
-      when /\A\)/
-        make_token(:')', $&)
+      when /\A\d+/ then make_token(:integer, $&)
+      when /\A\+/  then make_token(:+,       $&)
+      when /\A-/   then make_token(:-,       $&)
+      when /\A\*/  then make_token(:*,       $&)
+      when /\A\//  then make_token(:/,       $&)
+      when /\A\^/  then make_token(:'^',     $&)
+      when /\A\(/  then make_token(:'(',     $&)
+      when /\A\)/  then make_token(:')',     $&)
       end
     end
   end

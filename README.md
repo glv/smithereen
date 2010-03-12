@@ -99,7 +99,6 @@ this design before committing to it for the long term.
 
 ## To do
 
-* Set up bundler and get this running on RCR.
 * Write syntax error tests for the JavaScript parser.
 * Add some kind of tracing output to make it easier to understand
   (and debug) the algorithm.
@@ -108,6 +107,9 @@ this design before committing to it for the long term.
 * Pull most of the grammar definition methods out of the JS
   parser and put them where they can be reused (and write tests
   for them).
+* Separate grammar definition (including symbol table management)
+  from actual parsing.
+* Investigate separating parsing from tree building.
 * Figure out a good way to unit-test prefix, infix, and stmt methods.
 * Address all the TODO and ??? comments
 * Revisit:

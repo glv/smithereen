@@ -134,7 +134,7 @@ describe Radish::Parser do
       end
     end
     
-    describe "#parse" do
+    describe "#parse_expression" do
       it "returns the value returned by expression" do
         mock(subject).expression { :some_result }
         stub(subject).advance_if_looking_at!
@@ -147,6 +147,13 @@ describe Radish::Parser do
           expect.advance_if_looking_at!(Parser::END_TOKEN_TYPE).ordered
         end
         subject.parse
+      end
+    end
+    
+    describe "#parse" do
+      it "delegates to parse_expression" do
+        mock(subject).parse_expression{:some_tree}
+        subject.parse.should == :some_tree
       end
     end
     

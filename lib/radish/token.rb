@@ -33,20 +33,13 @@ module Radish
   module TokenInstanceMethods
     attr_accessor :parser
     
-    # TODO: I keep forgetting to put things here.  Is there a better way?
-    delegate :advance_if_looking_at, 
-             :advance_if_looking_at!,
-             :block,
-             :concatenated_list,
-             :expression, 
-             :looking_at?,
-             :new_scope,
-             :next_token,
-             :statement,
-             :statements, 
-             :symbol_table,
-             :take_token, 
-        :to => :parser
+    def method_missing(meth, *args, &blk)
+      if parser.respond_to?(meth)
+        parser.send(meth, *args, &blk)
+      else
+        super
+      end
+    end
     
     def to_msg
       if type.to_s == text

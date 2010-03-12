@@ -1,5 +1,3 @@
-$: << File.dirname(__FILE__) + '/../../lib'
-$: << File.dirname(__FILE__)
 require 'radish'
 
 module RadishSamples
@@ -38,8 +36,12 @@ module RadishSamples
       self.prefix = '<>+-&|=!'
       self.suffix = '=>&:|' 
     end
-
+    
     def produce_next_token
+      produce_next_token_with_regexps
+    end
+
+    def produce_next_token_with_regexps
       return nil if i >= length
     
       rest = s[i..-1]
@@ -99,7 +101,7 @@ module RadishSamples
             str << c
             move
           end
-          return LexerToken.new(:name, str, from, i)
+          return make_token(:name, str)
         when DIGIT === c
           str = c.chr
           move
@@ -123,11 +125,11 @@ module RadishSamples
             float = true
           end
 
-          if "eE".include?(c)
+          if c && "eE".include?(c)
             move
             str << c
             c = s[i]
-            if "-+".include?(c)
+            if c && "-+".include?(c)
               move
               str << c
             end
@@ -147,9 +149,10 @@ module RadishSamples
             move
             raise LexerException.new("Bad number", str, from, i)
           end
-
-          n = float? ? str.to_f : str.to_i
-          return LexerToken.new(:number, n, from, i)
+          
+          return make_token(:number, str)
+          # n = float ? str.to_f : str.to_i
+          # return make_token(:number, n)
           # ??? Something about checking for finiteness here
 
         when "'\"".include?(c)
@@ -159,7 +162,7 @@ module RadishSamples
           loop do
             c = s[i]
             if c < ?\ 
-              if "\n\r".include?(c) || c.nil?
+              if c.nil? || "\n\r".include?(c)
                 msg = "Unterminated string."
               else
                 msg = "Control character in string."
@@ -197,14 +200,14 @@ module RadishSamples
             move
           end
           move
-          return LexerToken.new(:string, str, from, i)
+          return make_token(:string, str)
           c = s[i]
 
         when c == ?/ && s[i+1] == ?/
           move
           loop do 
             c = s[i]
-            break if '\n\r'.include(c) || c.nil?
+            break if c.nil? || '\n\r'.include(c)
             move
           end
 
@@ -217,10 +220,10 @@ module RadishSamples
             str << c
             move
           end
-          return LexerToken.new(:operator, str, from, i)
+          return make_token(:operator, str)
         else
           move
-          return LexerToken.new(:operator, c, from, i)
+          return make_token(:operator, c)
           c = s[i]
         end
       end

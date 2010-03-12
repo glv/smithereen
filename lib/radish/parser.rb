@@ -56,8 +56,12 @@ module Radish
       self.class.symbol_table
     end
     
-    def parse
+    def parse_expression
       returning(expression) { advance_if_looking_at! END_TOKEN_TYPE }
+    end
+    
+    def parse
+      parse_expression
     end
     
     # We use the names 'prefix' and 'infix' instead of Pratt's 'nud' and 'led',

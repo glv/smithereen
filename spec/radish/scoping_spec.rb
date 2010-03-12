@@ -171,7 +171,8 @@ describe Radish::Scoping::Scope do
         allow.reserved = false
         allow.scope = subject
       end
-      mock(subject.parser).new_token_module(:name, 0){mock_module}
+      mock(mock_module).dup{mock_module}
+      subject.parser.symbol_table[:name] = mock_module
       subject.send(:new_binding_module, false).should == mock_module
     end
     
@@ -182,16 +183,10 @@ describe Radish::Scoping::Scope do
         allow.module_eval
         allow.scope = subject
       end
-      stub(subject.parser).new_token_module{mock_module}
+      mock(mock_module).dup{mock_module}
+      subject.parser.symbol_table[:name] = mock_module
       subject.send(:new_binding_module, 'some_reserved_value')
     end        
-    
-    it "calls 'prefix {[:name, text]}' in the module" do
-      binding_module = subject.send(:new_binding_module, true)
-      mock_token = mock!.text{"foo"}.subject
-      mock_token.extend binding_module
-      mock_token.prefix.should == [:name, "foo"]
-    end
     
     it "stores the scope object as the module's 'scope' value" do
       tok = Radish::LexerToken.new(:name, 'some_name')
@@ -200,7 +195,8 @@ describe Radish::Scoping::Scope do
         allow.module_eval
         allow.reserved = false
       end
-      stub(subject.parser).new_token_module{mock_module}
+      mock(mock_module).dup{mock_module}
+      subject.parser.symbol_table[:name] = mock_module
       subject.send(:new_binding_module, false)
     end
   end

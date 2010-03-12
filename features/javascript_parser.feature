@@ -147,11 +147,11 @@ Feature: JavaScript Parser
     When I ask for the parse tree for expression "<input>"
     Then I should see the tree "<result>"
     
-    # TODO: need some with names as keys, when names are supported
     Examples:
       | input     | result                                                 |
       | {}        | [:object ]                                             |
       | {"a": 2}  | [:object, [:lit, "a"], [:lit, 2] ]                     |
+      | {a:2}     | [:object, [:name, "a"], [:lit, 2] ]                    |
       | {1:2,3:4} | [:object, [:lit, 1], [:lit, 2], [:lit, 3], [:lit, 4] ] |
 
   Scenario Outline: Functions

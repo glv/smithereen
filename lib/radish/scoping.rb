@@ -16,9 +16,8 @@ module Radish
         @defs = {}
       end
       
-      # What is name? a token or a symbol module?
-      # It's a token.  But in here, we augment it into sort of a null symbol.
-      # That null symbol is returned.
+      # Defines 'name' in the scope (if it's not already defined)
+      # and returns a binding token module for the token.
       def define(name)
         if t = defs[name.text.to_sym]
           raise name, "Already #{t.reserved ? 'reserved' : 'defined'}" 
@@ -31,9 +30,8 @@ module Radish
         store(name, false)
       end
       
-      # What is name? a token or a symbol module?
-      # Name is just a name this time.
-      # But the stored module-ish is returned.
+      # Looks up 'name' and returns the module that reflects its
+      # meaning in this scope.
       def find(name)
         current = self
         key = name.to_sym
@@ -48,10 +46,10 @@ module Radish
         return symbol_table.fetch(key){symbol_table[:name]}
       end
       
-      # What is name? a token or a symbol module?
-      # a token this time, and it *doesn't* get turned into a module.
+      # Marks 'name' as a reserved word in the scope (if it hasn't
+      # already been defined or reserved) and returns a binding
+      # module for the token.
       def reserve(name)
-        # TODO: is the guard before calling reserved necessary?
         return if name.type != :name || (name.respond_to?(:reserved) && name.reserved)
         if name_module = defs[name.text.to_sym]
           return if name_module.reserved
@@ -63,6 +61,7 @@ module Radish
         store(name, true)
       end
 
+      # Discards this scope and makes the parent the current scope again.
       def pop
         parser.scope = parent;
       end     
@@ -74,16 +73,10 @@ module Radish
       end
       
       def new_binding_module(reserved)
-        # TODO: would it be possible to dup symbol_table[:name] and add
-        #       reserved and scope, so we could just inherit the prefix
-        #       method from there?
-        returning parser.new_token_module(:name, 0) do |name_module|
+        returning(symbol_table[:name].dup) do |name_module|
           name_module.module_eval do
             mattr_accessor :reserved
             mattr_accessor :scope
-          
-            # TODO: nasty coupling here. We shouldn't know about tree building.
-            prefix {[:name, text]}
           end
           name_module.reserved = reserved
           name_module.scope = self

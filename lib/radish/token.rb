@@ -4,14 +4,10 @@ require 'radish/errors'
 module Radish
   module TokenClassMethods
     def prefix(&blk)
-      raise ::Radish::GrammarError, "prefix blocks must not have positive arity" unless blk.arity <= 0
       defblock :prefix, &blk
     end
     
     def infix(&blk)
-      if blk.arity > 1 || blk.arity == 0
-        raise ::Radish::GrammarError, "infix blocks must have an arity either 1 or negative"
-      end
       defblock :infix, &blk
     end
     

@@ -46,21 +46,12 @@ describe Radish::TokenClassMethods do
       subject.send(:prefix) { 'bar' }
       subject.new.prefix.should == 'bar'
     end
-    
-    it "rejects blocks with positive arities" do
-      lambda{subject.send(:prefix) {|a| 1}}.should raise_error(Radish::GrammarError)
-    end
   end
   
   describe "#infix" do
     it "defines the :infix method with the supplied block" do
       subject.send(:infix) {|left| 'bar' }
       subject.new.infix(1).should == 'bar'
-    end
-    
-    it "rejects blocks unless the arity is 1 or negative" do
-      lambda{subject.send(:infix) {1}}.should_not raise_error
-      lambda{subject.send(:infix) {|a,b| 1}}.should raise_error(Radish::GrammarError)
     end
   end
 end

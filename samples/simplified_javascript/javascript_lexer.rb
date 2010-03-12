@@ -56,11 +56,11 @@ module RadishSamples
         str_source_size = $&.size
         str = $2.gsub(%r{\\[bfnrt]}) do |m|
           case m[1]
-          when ?b: ?\b.chr
-          when ?f: ?\f.chr
-          when ?n: ?\n.chr
-          when ?r: ?\r.chr
-          when ?t: ?\t.chr
+          when ?b then ?\b.chr
+          when ?f then ?\f.chr
+          when ?n then ?\n.chr
+          when ?r then ?\r.chr
+          when ?t then ?\t.chr
             # ??? do unicode somehow
           end
         end
@@ -176,11 +176,11 @@ module RadishSamples
               end
               c = s[i]
               c = case c
-              when ?b: ?\b
-              when ?f: ?\f
-              when ?n: ?\n
-              when ?r: ?\r
-              when ?t: ?\t
+              when ?b then ?\b
+              when ?f then ?\f
+              when ?n then ?\n
+              when ?r then ?\r
+              when ?t then ?\t
                 # 		when ?u
                 # 		  if i >= length
                 # 		    raise LexerException.new("Unterminated string", str, from, i)

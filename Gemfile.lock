@@ -1,79 +1,79 @@
 --- 
-dependencies: 
-  rr: 
-    group: 
-    - :test
-    version: ">= 0.10.10"
-  rake: 
-    group: 
-    - :test
-    version: ">= 0.8.7"
-  rspec: 
-    group: 
-    - :test
-    version: ">= 2.0.0.a7"
-  rcov: 
-    group: 
-    - :test
-    version: ">= 0.9.8"
-  jeweler: 
-    group: 
-    - :release
-    version: ">= 1.4.0"
-  cucumber: 
-    group: 
-    - :test
-    version: ">= 0.6.3"
-  activesupport: 
-    group: 
-    - :default
-    version: ">= 3.0.pre"
-specs: 
-- rake: 
-    version: 0.8.7
-- tzinfo: 
-    version: 0.3.16
-- rspec-core: 
-    version: 2.0.0.beta.2
-- term-ansicolor: 
-    version: 1.0.4
-- rr: 
-    version: 0.10.10
-- diff-lcs: 
-    version: 1.1.2
-- memcache-client: 
-    version: 1.7.8
-- polyglot: 
-    version: 0.3.0
-- treetop: 
-    version: 1.4.4
-- rubyforge: 
-    version: 2.0.4
-- rspec: 
-    version: 2.0.0.beta.2
-- rspec-expectations: 
-    version: 2.0.0.beta.2
-- gemcutter: 
-    version: 0.5.0
-- rcov: 
-    version: 0.9.8
-- git: 
-    version: 1.2.5
-- jeweler: 
-    version: 1.4.0
-- json_pure: 
-    version: 1.2.2
-- cucumber: 
-    version: 0.6.3
-- i18n: 
-    version: 0.3.5
-- builder: 
-    version: 2.1.2
-- rspec-mocks: 
-    version: 2.0.0.beta.2
-- activesupport: 
-    version: 3.0.0.beta
 hash: 19d8ecd059c39a15a238ef679ea7209f5740dbdc
 sources: 
 - Rubygems: 
     uri: http://gemcutter.org
+specs: 
+- rake: 
+    version: 0.8.7
+- activesupport: 
+    version: 3.0.0.beta
+- rspec: 
+    version: 2.0.0.beta.2
+- rspec-mocks: 
+    version: 2.0.0.beta.2
+- rspec-expectations: 
+    version: 2.0.0.beta.2
+- rspec-core: 
+    version: 2.0.0.beta.2
+- builder: 
+    version: 2.1.2
+- rcov: 
+    version: 0.9.8
+- i18n: 
+    version: 0.3.5
+- tzinfo: 
+    version: 0.3.16
+- cucumber: 
+    version: 0.6.3
+- treetop: 
+    version: 1.4.4
+- jeweler: 
+    version: 1.4.0
+- term-ansicolor: 
+    version: 1.0.4
+- rr: 
+    version: 0.10.10
+- polyglot: 
+    version: 0.3.0
+- memcache-client: 
+    version: 1.7.8
+- json_pure: 
+    version: 1.2.2
+- diff-lcs: 
+    version: 1.1.2
+- git: 
+    version: 1.2.5
+- rubyforge: 
+    version: 2.0.4
+- gemcutter: 
+    version: 0.5.0
+dependencies: 
+  activesupport: 
+    version: ">= 3.0.pre"
+    group: 
+    - :default
+  cucumber: 
+    version: ">= 0.6.3"
+    group: 
+    - :test
+  rake: 
+    version: ">= 0.8.7"
+    group: 
+    - :test
+  rcov: 
+    version: ">= 0.9.8"
+    group: 
+    - :test
+  rr: 
+    version: ">= 0.10.10"
+    group: 
+    - :test
+  rspec: 
+    version: ">= 2.0.0.a7"
+    group: 
+    - :test
+  jeweler: 
+    version: ">= 1.4.0"
+    group: 
+    - :release

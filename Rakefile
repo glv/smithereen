@@ -2,19 +2,20 @@ def rcr?
   ENV['RUN_CODE_RUN'] == 'true'
 end
 
-system("bundle", "install", "--disable-shared-gems") if rcr?
+system("bundle install --disable-shared-gems") if rcr?
 
 begin
   # Try to require the preresolved locked set of gems.
   require File.expand_path('../.bundle/environment', __FILE__)
 rescue LoadError
   # Fall back on doing an unlocked resolve at runtime.
+  puts "Something's wrong with bundle configuration.  Falling back to RubyGems."
   require "rubygems"
   require "bundler"
   Bundler.setup
 end
 
-require 'rake'
+# require 'rake'
 
 begin
   require 'jeweler'

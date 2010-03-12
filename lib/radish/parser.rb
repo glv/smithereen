@@ -79,7 +79,8 @@ module Radish
     # or raises an error if the next token is of a different type. 
     def advance_if_looking_at!(type)
       advance_if_looking_at(type) or 
-          raise next_token, "Expected #{symbol_table[type].to_msg}, found #{next_token.to_msg} instead"
+          # raise next_token, "Expected #{symbol_table[type].to_msg}, found #{next_token.to_msg} instead"
+          raise next_token, "Unexpected #{next_token.to_msg}; expected #{symbol_table[type].to_msg}"
     end
 
     def expression(rbp=0)

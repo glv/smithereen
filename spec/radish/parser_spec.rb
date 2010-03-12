@@ -246,7 +246,7 @@ describe Radish::Parser do
           expect.next_token{other_token}.times(any_times)
         end
         subject.class.deftoken(:some_type)
-        lambda{subject.advance_if_looking_at!(:some_type)}.should raise_error(Radish::ParseError, "Expected some_type, found other_type (ot) instead: #{other_token}")
+        lambda{subject.advance_if_looking_at!(:some_type)}.should raise_error(Radish::ParseError, "Unexpected other_type (ot); expected some_type: #{other_token}")
       end
     end
     

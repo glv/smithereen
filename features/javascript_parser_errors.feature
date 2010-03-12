@@ -13,3 +13,5 @@ Feature: JavaScript Parser
     Examples:
       | input | message        |
       | + 2   | Unexpected '+' |
+      | 2 +   | Unexpected end of input |
+      | 2 3   | Unexpected number (3); expected '(end)' |

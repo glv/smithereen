@@ -167,39 +167,137 @@ describe Radish::Grammar do
   end
   
   describe "grammar definition methods" do
+    subject {Grammar}
     
     describe "symbol" do
-      it "returns a new token module"
-      it "uses 0 as the default bp value"
-      it "registers the passed block as the module's prefix method'"
+      it "returns a new token module" do
+        mock(subject).deftoken(:foo, 0){:some_module}
+        subject.symbol(:foo, 0).should == :some_module
+      end
+      
+      it "uses 0 as the default bp value" do
+        mock(subject).deftoken(:foo, 0){:some_module}
+        subject.symbol(:foo).should == :some_module
+      end
+      
+      it "registers the passed block as the module's prefix method'" do
+        token_module = subject.symbol(:foo){:prefix_result}
+        token = Object.new
+        token.extend(token_module)
+        token.prefix.should == :prefix_result
+      end
     end
     
     describe "constant" do
-      it "returns a new symbol module with the passed type"
+      it "returns a new symbol module with the passed type" do
+        mock(subject).symbol(:foo){:some_module}
+        subject.constant(:foo, 'bar').should == :some_module
+      end
+      
       describe "the prefix method" do
-        it "reserves the constant name in the current scope"
-        it "returns [:lit, value]"
+        it "reserves the constant name in the current scope" do
+          token_module = subject.constant(:foo, 'bar')
+          token = Object.new
+          token.extend(token_module)
+          mock(token).scope.mock!.reserve(token)
+          token.prefix
+        end
+        
+        it "returns [:lit, value]" do
+          token_module = subject.constant(:foo, 'bar')
+          token = Object.new
+          token.extend(token_module)
+          stub(token).scope.stub!.reserve
+          token.prefix.should == [:lit, 'bar']
+        end
       end
     end
     
     describe "infix" do
-      it "returns a new token module"
-      it "uses :left as the default :assoc option"
-      it "raises an error if an invalid :assoc option is passed"
-      it "uses the passed lbp as the rbp if :assoc is :left"
-      it "uses lbp-1 as the rbp if :assoc is :right"
-      it "registers the passed block as the module's infix method"
+      it "returns a new token module" do
+        stub(mock_module = Object.new).infix
+        mock(subject).deftoken(:foo, 0){mock_module}
+        subject.infix(:foo, 0).should == mock_module
+      end
+      
+      it "raises an error if an invalid :assoc option is passed" do
+        lambda{subject.infix(:foo, 0, :assoc => :bar)}.should raise_error(Radish::GrammarError)
+      end
+      
+      it "uses the passed lbp as the rbp if :assoc is not supplied" do
+        token_module = subject.infix(:foo, 20)
+        token = Object.new
+        token.extend(token_module)
+        mock(token).expression(20)
+        token.infix(1)
+      end
+      
+      it "uses the passed lbp as the rbp if :assoc is :left" do
+        token_module = subject.infix(:foo, 20, :assoc => :left)
+        token = Object.new
+        token.extend(token_module)
+        mock(token).expression(20)
+        token.infix(1)
+      end
+
+      it "uses lbp-1 as the rbp if :assoc is :right" do
+        token_module = subject.infix(:foo, 20, :assoc => :right)
+        token = Object.new
+        token.extend(token_module)
+        mock(token).expression(19)
+        token.infix(1)
+      end
+
+      it "registers the passed block as the module's infix method" do
+        token_module = subject.infix(:foo, 0){:some_result}
+        token = Object.new
+        token.extend(token_module)
+        token.infix(1).should == :some_result
+      end
+
       describe "default infix method (used if no block is supplied)" do
-        it "returns [type, left, expression(rbp)]"
+        it "returns [type, left, expression(rbp)]" do
+          token_module = subject.infix(:foo, 20)
+          token = Object.new
+          token.extend(token_module)
+          stub(token).expression(20){:expression_result}
+          token.infix(:left_value).should == [:foo, :left_value, :expression_result]
+        end
       end
     end
     
     describe "prefix" do
-      it "returns a new token module"
-      it "registers the passed block as the module's prefix method"
+      it "returns a new token module" do
+        stub(mock_module = Object.new).prefix
+        mock(subject).deftoken(:foo){mock_module}
+        subject.prefix(:foo).should == mock_module
+      end
+      
+      it "registers the passed block as the module's prefix method" do
+        token_module = subject.prefix(:foo){:some_result}
+        token = Object.new
+        token.extend(token_module)
+        token.prefix.should == :some_result
+      end
+        
       describe "default prefix method (used if no block is supplied)" do
-        it "reserves the token in the current scope"
-        it "returns [type, expression(70)]"
+        it "reserves the token in the current scope" do
+          token_module = subject.prefix(:foo)
+          token = Object.new
+          token.extend(token_module)
+          mock(token).scope.mock!.reserve(token)
+          stub(token).expression
+          token.prefix
+        end
+        
+        it "returns [type, expression(70)]" do
+          token_module = subject.prefix(:foo)
+          token = Object.new
+          token.extend(token_module)
+          stub(token).scope.stub!.reserve
+          mock(token).expression(70){:expression_result}
+          token.prefix.should == [:foo, :expression_result]
+        end
       end
     end
     
@@ -210,15 +308,30 @@ end
 describe Radish::StatementGrammar do
   StatementGrammar = Radish::StatementGrammar
   
+  subject {StatementGrammar}
+  
   before do
     StatementGrammar.symbol_table.clear
   end
   
+  # Should test new_token_module, but it's difficult to mock and
+  # it's covered well by stmt, below.
+
   describe "grammar definition methods" do
     
     describe "stmt" do
-      it "returns a new token module"
-      it "registers the passed block as the module's stmt method"
+      it "returns a new token module" do
+        stub(mock_module = Object.new).stmt
+        mock(subject).deftoken(:foo){mock_module}
+        subject.stmt(:foo).should == mock_module
+      end
+      
+      it "registers the passed block as the module's stmt method" do
+        token_module = subject.stmt(:foo){:some_result}
+        token = Object.new
+        token.extend(token_module)
+        token.stmt.should == :some_result
+      end
     end
     
   end

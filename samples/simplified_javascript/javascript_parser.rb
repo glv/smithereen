@@ -8,16 +8,6 @@ end
 
 module Radish::TokenClassMethods
   # TODO: Build a better way to inject such methods into TCM.
-  def stmt(&blk)
-    raise ::Radish::GrammarError, "stmt blocks must not have positive arity" unless blk.arity <= 0
-    defblock :stmt, &blk
-    # TODO: do I need to add some explicit indicator that this module is a
-    #       statement?  For now I'm using respond_to?(:stmt).  But for prefix
-    #       and infix, there's a default implementation that detects a syntax
-    #       error.  Is there a case where stmt could be called on a token that's
-    #       not a statement, such that we would need such a default implementation
-    #       of stmt as well?  If so, we need an explicit flag.
-  end
 end
 
 module RadishSamples
@@ -185,7 +175,7 @@ module RadishSamples
     # -------------------------------------------------------------- statements
     stmt :'{' do
       new_scope
-      returning([:block, *statements(:'}')]) do
+      returning [:block, *statements(:'}')] do
         scope.pop
       end
     end

@@ -130,3 +130,19 @@ describe Radish::TokenInstanceMethods do
     end
   end
 end
+
+describe Radish::StatementTokenClassMethods do
+  subject do
+    Class.new do
+      extend Radish::TokenClassMethods
+      extend Radish::StatementTokenClassMethods 
+    end
+  end
+  
+  describe "#stmt" do
+    it "defines the :stmt method with the supplied block" do
+      subject.send(:stmt) { 'bar' }
+      subject.new.stmt.should == 'bar'
+    end
+  end
+end

@@ -62,7 +62,7 @@ module Radish
     end
     
     def self.symbol(type, bp=0, &prefix_blk)
-      returning(deftoken(type, bp)) do |tok_module|
+      returning deftoken(type, bp) do |tok_module|
         tok_module.prefix(&prefix_blk) if block_given?
       end
     end
@@ -79,17 +79,19 @@ module Radish
 
     def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
       unless [:left, :right].include?(options[:assoc])
-        raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
+        raise Radish::GrammarError, "Invalid :assoc option: #{options[:assoc]}"
       end
+      # TODO: This was broken, yet all the scenarios passed.  Clearly it's not
+      #       being tested.
       rbp = (options[:assoc] == :left) ? lbp : lbp - 1
 
-      tok_module = deftoken(type, lbp)
       infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
-      tok_module.infix &infix_blk
+      returning deftoken(type, lbp) do |tok_module|
+        tok_module.infix &infix_blk
+      end
     end
     
     def self.prefix(type, &prefix_blk)
-      tok_module = deftoken(type)
       unless block_given?
         prefix_blk = lambda do
           scope.reserve(self)
@@ -97,12 +99,18 @@ module Radish
           [type, expression(70)]
         end
       end
-      tok_module.prefix &prefix_blk
+      returning deftoken(type) do |tok_module|
+        tok_module.prefix &prefix_blk
+      end
     end
     
   end
   
   class StatementGrammar < Grammar
+    def self.new_token_module(type, lbp)
+      returning(super) {|mod| mod.extend Radish::StatementTokenClassMethods}
+    end
+
     def self.stmt(type, &stmt_blk)
       deftoken(type) do
         stmt &stmt_blk

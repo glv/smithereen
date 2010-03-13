@@ -57,4 +57,17 @@ module Radish
       ::Radish::ParseError.new(message, self)
     end
   end
+  
+  module StatementTokenClassMethods
+    def stmt(&blk)
+      raise ::Radish::GrammarError, "stmt blocks must not have positive arity" unless blk.arity <= 0
+      defblock :stmt, &blk
+      # TODO: do I need to add some explicit indicator that this module is a
+      #       statement?  For now I'm using respond_to?(:stmt).  But for prefix
+      #       and infix, there's a default implementation that detects a syntax
+      #       error.  Is there a case where stmt could be called on a token that's
+      #       not a statement, such that we would need such a default implementation
+      #       of stmt as well?  If so, we need an explicit flag.
+    end
+  end
 end

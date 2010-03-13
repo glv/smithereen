@@ -208,7 +208,7 @@ describe Radish::Grammar do
 end
 
 describe Radish::StatementGrammar do
-  StatementGrammar = Grammar = Radish::StatementGrammar
+  StatementGrammar = Radish::StatementGrammar
   
   before do
     StatementGrammar.symbol_table.clear

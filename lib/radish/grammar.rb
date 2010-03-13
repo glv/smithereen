@@ -26,8 +26,8 @@ module Radish
     
     def self.new_token_module(type, lbp)
       tok_module = Module.new do
-        extend TokenClassMethods
-        include TokenInstanceMethods
+        extend Radish::TokenClassMethods
+        include Radish::TokenInstanceMethods
         mattr_accessor :lbp
         mattr_accessor :type
       end
@@ -100,4 +100,13 @@ module Radish
     end
     
   end
+  
+  class StatementGrammar < Grammar
+    def self.stmt(type, &stmt_blk)
+      deftoken(type) do
+        stmt &stmt_blk
+      end
+    end
+  end
+
 end

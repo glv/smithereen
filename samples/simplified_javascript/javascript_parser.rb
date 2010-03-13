@@ -21,14 +21,14 @@ module Radish::TokenClassMethods
 end
 
 module RadishSamples
-  class SimplifiedJavaScriptGrammar < Radish::Grammar
+  class SimplifiedJavaScriptGrammar < Radish::StatementGrammar
     
     ASSIGNABLE_TYPES = [
       :name,      # a()
       :propref,   # a.b()
       :lookup,    # a[1]()
     ]
-
+        
     def self.assignment(type)
       infix(type, 10, :assoc => :right) do |left|
         # TODO: raise a ParseError here, rather than a StandardError
@@ -37,12 +37,6 @@ module RadishSamples
       end
     end
 
-    def self.stmt(type, &stmt_blk)
-      deftoken(type) do
-        stmt &stmt_blk
-      end
-    end
-    
     def module_for_token(token)
       case token.type
       when :name     then return parser.scope.find(token.text)
@@ -251,46 +245,8 @@ module RadishSamples
 
   end
   
-  class SimplifiedJavaScriptParser < Radish::Parser
+  class SimplifiedJavaScriptParser < Radish::StatementParser
     include Radish::Scoping
-
-    def initialize(grammar, source_lexer)
-      super
-      new_scope
-    end
-
-    def parse_statement
-      returning(statement) { advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE }
-    end
-
-    def parse
-      statements(Grammar::END_TOKEN_TYPE)
-    end
-
-    def statement
-      if next_token.respond_to?(:stmt)
-        # Why reserve here?  Because Crockford is illustrating a flexible
-        # reserved word strategy, wherein a word can be used as a variable
-        # within a scope if it's not also used as a control word in that
-        # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
-        scope.reserve(next_token)
-        return take_token.stmt
-      end
-
-      returning expression(0) do |expr|
-        # TODO: apparently only assignments and (for some reason) expressions
-        #       starting with '(' are allowed as statements.  But for now that
-        #       will mess up our testing.
-        # raise error unless expr is an assignment or starts with '('
-        advance_if_looking_at! :';'
-      end
-    end
-
-    def statements(terminator)
-      concatenated_list(terminator) do
-        statement
-      end
-    end
 
     def block
       advance_if_looking_at!(:'{').stmt

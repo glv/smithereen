@@ -96,4 +96,47 @@ module Radish
     
   end
   
+  class StatementParser < Parser
+    def initialize(grammar, source_lexer)
+      super
+      new_scope
+    end
+
+    def parse_statement
+      returning(statement) { advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE }
+    end
+
+    def parse
+      statements(Grammar::END_TOKEN_TYPE)
+    end
+
+    def statement
+      if next_token.respond_to?(:stmt)
+        # Why reserve here?  Because Crockford is illustrating a flexible
+        # reserved word strategy, wherein a word can be used as a variable
+        # within a scope if it's not also used as a control word in that
+        # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
+        scope.reserve(next_token)
+        return take_token.stmt
+      end
+
+      # TODO: split this off into a call to "expression_statement" or something,
+      # so I can move the knowledge about :';' back down into JavaScriptParser
+      # where it belongs.
+      returning expression(0) do |expr|
+        # TODO: apparently only assignments and (for some reason) expressions
+        #       starting with '(' are allowed as statements.  But for now that
+        #       will mess up our testing.
+        # raise error unless expr is an assignment or starts with '('
+        advance_if_looking_at! :';'
+      end
+    end
+
+    def statements(terminator)
+      concatenated_list(terminator) do
+        statement
+      end
+    end
+  end
+  
 end

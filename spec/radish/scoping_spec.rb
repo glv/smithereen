@@ -162,7 +162,7 @@ describe Radish::Scoping::Scope do
   end
   
   describe "#new_binding_module" do
-    class MockGrammar; attr_accessor :parser; end
+    class MockGrammar < Radish::Grammar; end
     subject { Scope.new(Radish::Parser.new(MockGrammar.new, nil), nil) }
     
     it "returns a new token module (with type :name and 0 binding power)" do

@@ -34,11 +34,7 @@ module Radish
     attr_accessor :parser
     
     def method_missing(meth, *args, &blk)
-      if parser.respond_to?(meth)
-        parser.send(meth, *args, &blk)
-      else
-        super
-      end
+      parser.respond_to?(meth) ? parser.send(meth, *args, &blk) : super
     end
     
     def to_msg

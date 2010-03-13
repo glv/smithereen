@@ -117,18 +117,19 @@ module Radish
         # within a scope if it's not also used as a control word in that
         # same scope.  See http://javascript.crockford.com/tdop/tdop.html#scope
         scope.reserve(next_token)
-        return take_token.stmt
+        take_token.stmt
+      else
+        expression_statement
       end
-
-      # TODO: split this off into a call to "expression_statement" or something,
-      # so I can move the knowledge about :';' back down into JavaScriptParser
-      # where it belongs.
+    end
+    
+    def expression_statement(terminator=nil)
       returning expression(0) do |expr|
         # TODO: apparently only assignments and (for some reason) expressions
         #       starting with '(' are allowed as statements.  But for now that
         #       will mess up our testing.
         # raise error unless expr is an assignment or starts with '('
-        advance_if_looking_at! :';'
+        advance_if_looking_at! terminator if terminator
       end
     end
 

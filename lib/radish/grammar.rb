@@ -11,7 +11,20 @@ module Radish
     def initialize
       @symbol_table = self.class.symbol_table.dup
     end
-
+    
+    def symbolize(token)
+      returning token do
+        token.extend(module_for_token(token))
+        token.parser = parser
+      end
+    end
+    
+    def module_for_token(token, type=token.type)
+      symbol_table.fetch(type) do
+        raise ParseError.new("Unrecognized token type from lexer", token)
+      end
+    end
+    
     # ----------------------------------------------------------- Class methods
     def self.inherited(klass)
       klass.deftoken(END_TOKEN_TYPE, 0) do
@@ -48,13 +61,6 @@ module Radish
       symbol_table[type] = tok_module
     end
     
-    def symbolize(token)
-      returning token do
-        token.extend(module_for_token(token))
-        token.parser = parser
-      end
-    end
-    
     def self.symbol(type, bp=0, &prefix_blk)
       returning(deftoken(type, bp)) do |tok_module|
         tok_module.prefix(&prefix_blk) if block_given?
@@ -75,7 +81,7 @@ module Radish
       unless [:left, :right].include?(options[:assoc])
         raise Radish::GrammarError("Invalid :assoc option: #{options[:assoc]}")
       end
-      rbp = (options[:associativity] == :left) ? lbp : lbp - 1
+      rbp = (options[:assoc] == :left) ? lbp : lbp - 1
 
       tok_module = deftoken(type, lbp)
       infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
@@ -87,16 +93,11 @@ module Radish
       unless block_given?
         prefix_blk = lambda do
           scope.reserve(self)
+          # TODO: why 70?
           [type, expression(70)]
         end
       end
       tok_module.prefix &prefix_blk
-    end
-    
-    def module_for_token(token, type=token.type)
-      symbol_table.fetch(type) do
-        raise ParseError.new("Unrecognized token type from lexer", token)
-      end
     end
     
   end

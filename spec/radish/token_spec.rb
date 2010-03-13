@@ -73,6 +73,24 @@ describe Radish::TokenInstanceMethods do
     end
   end
   
+  describe "#method_missing" do
+    it "delegates to parser if the parser supports the method" do
+      mock(parser = Object.new) do |expect|
+        expect.respond_to?(:foo){true}
+        expect.foo(1, 2, :a => 3){:bar}
+      end
+      subject.parser = parser
+      subject.foo(1, 2, :a => 3).should == :bar
+    end
+    
+    it "calls super if the parser does not support the method" do
+      mock(parser = Object.new).respond_to?(:foo){false}
+      dont_allow(parser).foo(1)
+      subject.parser = parser
+      lambda{subject.foo(1)}.should raise_error(StandardError)
+    end
+  end
+  
   describe "#advance_if_looking_at" do
     it "delegates to parser" do
       stub(subject).parser.mock!.advance_if_looking_at(:foo)

@@ -177,6 +177,16 @@ describe Radish::Scoping::Scope do
       subject.send(:new_binding_module, false).should == mock_module
     end
     
+    it "defines :reserved and :scope as accessors on the module" do
+      tok = Radish::LexerToken.new(:name, 'some_name')
+      mock(mock_module = Module.new).dup{mock_module}
+      stub(subject).symbol_table{ {:name => mock_module} }
+      result_module = subject.send(:new_binding_module, :reserved_val)
+      result_module.should == mock_module
+      result_module.reserved.should == :reserved_val
+      result_module.scope.should == subject
+    end
+    
     it "sets 'module.reserved' based on the passed 'reserved' parameter" do
       tok = Radish::LexerToken.new(:name, 'some_name')
       mock(mock_module = Object.new).reserved = 'some_reserved_value'

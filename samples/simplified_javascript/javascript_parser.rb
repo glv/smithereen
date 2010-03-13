@@ -44,7 +44,7 @@ module RadishSamples
       else                super
       end
     end
-
+    
     # --------------------------------------------------- symbols and constants
     symbol :name do # TODO: fake symbol; don't like this.
       [:name, text]
@@ -247,6 +247,10 @@ module RadishSamples
   
   class SimplifiedJavaScriptParser < Radish::StatementParser
     include Radish::Scoping
+
+    def expression_statement
+      super(:';')
+    end
 
     def block
       advance_if_looking_at!(:'{').stmt

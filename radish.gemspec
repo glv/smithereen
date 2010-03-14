@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{radish}
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Glenn Vanderburg"]
-  s.date = %q{2010-03-11}
+  s.date = %q{2010-03-13}
   s.description = %q{A library for building parsers using top-down operator precedence}
   s.email = %q{glv@vanderburg.org}
   s.extra_rdoc_files = [
@@ -28,20 +28,24 @@ Gem::Specification.new do |s|
      "features/calculator.feature",
      "features/javascript_lexer.feature",
      "features/javascript_parser.feature",
+     "features/javascript_parser_errors.feature",
      "features/step_definitions/calculator_steps.rb",
      "features/step_definitions/javascript_parser_steps.rb",
      "features/support/env.rb",
      "lib/radish.rb",
      "lib/radish/errors.rb",
+     "lib/radish/grammar.rb",
      "lib/radish/lexer.rb",
      "lib/radish/lexer_token.rb",
      "lib/radish/parser.rb",
      "lib/radish/scoping.rb",
      "lib/radish/token.rb",
+     "radish.gemspec",
      "samples/calculator.rb",
      "samples/simplified_javascript/javascript_lexer.rb",
      "samples/simplified_javascript/javascript_parser.rb",
      "spec/radish/errors_spec.rb",
+     "spec/radish/grammar_spec.rb",
      "spec/radish/lexer_spec.rb",
      "spec/radish/parser_spec.rb",
      "spec/radish/scoping_spec.rb",
@@ -80,6 +84,7 @@ Gem::Specification.new do |s|
   s.summary = %q{A library for building parsers using top-down operator precedence}
   s.test_files = [
     "spec/radish/errors_spec.rb",
+     "spec/radish/grammar_spec.rb",
      "spec/radish/lexer_spec.rb",
      "spec/radish/parser_spec.rb",
      "spec/radish/scoping_spec.rb",

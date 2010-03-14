@@ -79,11 +79,11 @@ module RadishSamples
     end
 
     prefix :'[' do
-      [:array] + separated_list(:',', :']') { expression(0) }
+      [:array] + delimited_sequence(:',', :']') { expression(0) }
     end
 
     prefix :'{' do
-      keyvals = separated_list(:',', :'}') do
+      keyvals = delimited_sequence(:',', :'}') do
         key = take_token
         raise key, "Bad property name" unless [:string, :number, :name].include?(key.type)
         advance_if_looking_at! :':'
@@ -105,7 +105,7 @@ module RadishSamples
       new_scope
 
       advance_if_looking_at! :'('
-      args = separated_list(:',', :')') do
+      args = delimited_sequence(:',', :')') do
         raise next_token, "Expected a parameter name" unless looking_at? :name
         param = take_token
         scope.define(param)
@@ -169,7 +169,7 @@ module RadishSamples
     infix :'(',   80 do |left|
       # TODO: raise a ParseError here, rather than a StandardError
       raise "Expected a function" unless CALLABLE_TYPES.include?(left.first)
-      [:call, left, separated_list(:',', :')'){ expression(0) }]
+      [:call, left, delimited_sequence(:',', :')'){ expression(0) }]
     end
 
     # -------------------------------------------------------------- statements
@@ -181,7 +181,7 @@ module RadishSamples
     end
 
     stmt :var do
-      decls = separated_list(:',', :';') do
+      decls = delimited_sequence(:',', :';') do
         raise next_token, "Expected a new variable name" unless looking_at?(:name)
         varname = take_token
         scope.define varname

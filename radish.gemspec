@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Glenn Vanderburg"]
-  s.date = %q{2010-03-13}
+  s.date = %q{2010-03-14}
   s.description = %q{A library for building parsers using top-down operator precedence}
   s.email = %q{glv@vanderburg.org}
   s.extra_rdoc_files = [

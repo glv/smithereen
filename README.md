@@ -104,11 +104,6 @@ this design before committing to it for the long term.
   (and debug) the algorithm.
 * Reusable example groups for lexers and lexer tokens.
 * Refactor scoping.
-* Pull most of the grammar definition methods out of the JS
-  parser and put them where they can be reused (and write tests
-  for them).
-* Separate grammar definition (including symbol table management)
-  from actual parsing.
 * Investigate separating parsing from tree building.
 * Figure out a good way to unit-test prefix, infix, and stmt methods.
 * Address all the TODO and ??? comments

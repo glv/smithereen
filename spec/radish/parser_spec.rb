@@ -82,87 +82,87 @@ describe Radish::Parser do
       end
     end
     
-    describe "#concatenated_list" do
-      it "returns an empty array if the next token is the terminator" do
-        mock(subject).looking_at?(:term){true}
+    describe "#sequence" do
+      it "returns an empty array if the next token is the boundary" do
+        mock(subject).looking_at?(:boundary){true}
         stub(subject).advance_if_looking_at!
-        subject.concatenated_list(:term).should == []
+        subject.sequence(:boundary).should == []
       end
       
-      it "yields until the next token is the terminator" do
+      it "yields until the next token is the boundary" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){false}.times(2).ordered
-          expect.looking_at?(:term){true}.ordered
+          expect.looking_at?(:boundary){false}.times(2).ordered
+          expect.looking_at?(:boundary){true}.ordered
         end
         stub(subject).advance_if_looking_at!
-        subject.concatenated_list(:term){}
+        subject.sequence(:boundary){}
       end
       
       it "returns the results of the yields" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){false}.times(2).ordered
-          expect.looking_at?(:term){true}.ordered
+          expect.looking_at?(:boundary){false}.times(2).ordered
+          expect.looking_at?(:boundary){true}.ordered
         end
         stub(subject).advance_if_looking_at!
         yield_vals = [:foo, :bar]
-        subject.concatenated_list(:term){yield_vals.pop}.should == [:bar, :foo]
+        subject.sequence(:boundary){yield_vals.pop}.should == [:bar, :foo]
       end
       
-      it "advances over the terminator before returning" do
+      it "advances over the boundary before returning" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){true}
-          expect.advance_if_looking_at!(:term){true}
+          expect.looking_at?(:boundary){true}
+          expect.advance_if_looking_at!(:boundary){true}
         end
-        subject.concatenated_list(:term)
+        subject.sequence(:boundary)
       end
     end
     
-    describe "#separated_list" do
-      it "returns an empty array if the next token is the terminator" do
-        mock(subject).looking_at?(:term){true}
+    describe "#delimited_sequence" do
+      it "returns an empty array if the next token is the boundary" do
+        mock(subject).looking_at?(:boundary){true}
         stub(subject).advance_if_looking_at!
-        subject.separated_list(:sep, :term).should == []
+        subject.delimited_sequence(:delimiter, :boundary).should == []
       end
       
-      it "yields until the next token is not the separator if :allow_extra is false" do
+      it "yields until the next token is not the delimiter if :allow_extra is false" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){false}.ordered
-          expect.advance_if_looking_at(:sep){true}.times(2).ordered
-          expect.advance_if_looking_at(:sep){false}.ordered
+          expect.looking_at?(:boundary){false}.ordered
+          expect.advance_if_looking_at(:delimiter){true}.times(2).ordered
+          expect.advance_if_looking_at(:delimiter){false}.ordered
         end
         stub(subject).advance_if_looking_at!
-        subject.separated_list(:sep, :term){}
+        subject.delimited_sequence(:delimiter, :boundary){}
       end
       
-      it "yields and skips the separator until looking at terminator if :allow_extra" do
+      it "yields and skips the delimiter until looking at boundary if :allow_extra" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){false}.ordered
-          expect.advance_if_looking_at(:sep){true}.ordered
-          expect.looking_at?(:term){false}.ordered
-          expect.advance_if_looking_at(:sep){true}.ordered
-          expect.looking_at?(:term){true}.ordered
+          expect.looking_at?(:boundary){false}.ordered
+          expect.advance_if_looking_at(:delimiter){true}.ordered
+          expect.looking_at?(:boundary){false}.ordered
+          expect.advance_if_looking_at(:delimiter){true}.ordered
+          expect.looking_at?(:boundary){true}.ordered
         end
         stub(subject).advance_if_looking_at!
-        subject.separated_list(:sep, :term, :allow_extra => true){}
+        subject.delimited_sequence(:delimiter, :boundary, :allow_extra => true){}
       end
       
       it "returns the results of the yields" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){false}.ordered
-          expect.advance_if_looking_at(:sep){true}.ordered
-          expect.advance_if_looking_at(:sep){false}.ordered
+          expect.looking_at?(:boundary){false}.ordered
+          expect.advance_if_looking_at(:delimiter){true}.ordered
+          expect.advance_if_looking_at(:delimiter){false}.ordered
         end
         stub(subject).advance_if_looking_at!
         yield_vals = [:foo, :bar]
-        subject.separated_list(:sep, :term){yield_vals.pop}.should == [:bar, :foo]
+        subject.delimited_sequence(:delimiter, :boundary){yield_vals.pop}.should == [:bar, :foo]
       end
       
-      it "advances over the terminator before returning" do
+      it "advances over the boundary before returning" do
         mock(subject) do |expect|
-          expect.looking_at?(:term){true}
-          expect.advance_if_looking_at!(:term){true}
+          expect.looking_at?(:boundary){true}
+          expect.advance_if_looking_at!(:boundary){true}
         end
-        subject.separated_list(:sep, :term)
+        subject.delimited_sequence(:delimiter, :boundary)
       end
       
     end
@@ -387,17 +387,17 @@ describe Radish::StatementParser do
   end
   
   describe "#statements" do
-    it "parses a list statements, up to a terminator" do
+    it "parses a sequence of statements, up to a boundary" do
       yield_vals = [:stmt1, :stmt2]
       mock(subject) do |expect|
-        expect.looking_at?(:term){false}.ordered
+        expect.looking_at?(:boundary){false}.ordered
         expect.statement{yield_vals.shift}.ordered
-        expect.looking_at?(:term){false}.ordered
+        expect.looking_at?(:boundary){false}.ordered
         expect.statement{yield_vals.shift}.ordered
-        expect.looking_at?(:term){true}.ordered
+        expect.looking_at?(:boundary){true}.ordered
       end
       stub(subject).advance_if_looking_at!
-      subject.statements(:term).should == [:stmt1, :stmt2]
+      subject.statements(:boundary).should == [:stmt1, :stmt2]
     end
   end
   

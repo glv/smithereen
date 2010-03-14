@@ -56,25 +56,25 @@ module Radish
       extend_with_infixes(rbp, start_expression)
     end
     
-    def concatenated_list(terminator)
+    def sequence(boundary)
       result = []
-      until looking_at?(terminator)
+      until looking_at?(boundary)
         result << yield
       end
-      advance_if_looking_at! terminator
+      advance_if_looking_at! boundary
       result
     end
 
-    def separated_list(separator, terminator, options={})
+    def delimited_sequence(delimiter, boundary, options={})
       result = []
-      unless looking_at?(terminator)
+      unless looking_at?(boundary)
         loop do
           result << yield
-          advance_if_looking_at separator or break
-          break if options[:allow_extra] && looking_at?(terminator)
+          advance_if_looking_at delimiter or break
+          break if options[:allow_extra] && looking_at?(boundary)
         end
       end
-      advance_if_looking_at! terminator
+      advance_if_looking_at! boundary
       result
     end
     
@@ -136,8 +136,8 @@ module Radish
       end
     end
 
-    def statements(terminator)
-      concatenated_list(terminator) do
+    def statements(boundary)
+      sequence(boundary) do
         statement
       end
     end

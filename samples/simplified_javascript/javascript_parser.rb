@@ -236,7 +236,6 @@ module RadishSamples
   end
   
   class SimplifiedJavaScriptParser < Radish::StatementParser
-    include Radish::Scoping
 
     def expression_statement
       super(:';')

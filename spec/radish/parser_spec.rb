@@ -83,9 +83,88 @@ describe Radish::Parser do
     end
     
     describe "#concatenated_list" do
+      it "returns an empty array if the next token is the terminator" do
+        mock(subject).looking_at?(:term){true}
+        stub(subject).advance_if_looking_at!
+        subject.concatenated_list(:term).should == []
+      end
+      
+      it "yields until the next token is the terminator" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){false}.times(2).ordered
+          expect.looking_at?(:term){true}.ordered
+        end
+        stub(subject).advance_if_looking_at!
+        subject.concatenated_list(:term){}
+      end
+      
+      it "returns the results of the yields" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){false}.times(2).ordered
+          expect.looking_at?(:term){true}.ordered
+        end
+        stub(subject).advance_if_looking_at!
+        yield_vals = [:foo, :bar]
+        subject.concatenated_list(:term){yield_vals.pop}.should == [:bar, :foo]
+      end
+      
+      it "advances over the terminator before returning" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){true}
+          expect.advance_if_looking_at!(:term){true}
+        end
+        subject.concatenated_list(:term)
+      end
     end
     
     describe "#separated_list" do
+      it "returns an empty array if the next token is the terminator" do
+        mock(subject).looking_at?(:term){true}
+        stub(subject).advance_if_looking_at!
+        subject.separated_list(:sep, :term).should == []
+      end
+      
+      it "yields until the next token is not the separator if :allow_extra is false" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){false}.ordered
+          expect.advance_if_looking_at(:sep){true}.times(2).ordered
+          expect.advance_if_looking_at(:sep){false}.ordered
+        end
+        stub(subject).advance_if_looking_at!
+        subject.separated_list(:sep, :term){}
+      end
+      
+      it "yields and skips the separator until looking at terminator if :allow_extra" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){false}.ordered
+          expect.advance_if_looking_at(:sep){true}.ordered
+          expect.looking_at?(:term){false}.ordered
+          expect.advance_if_looking_at(:sep){true}.ordered
+          expect.looking_at?(:term){true}.ordered
+        end
+        stub(subject).advance_if_looking_at!
+        subject.separated_list(:sep, :term, :allow_extra => true){}
+      end
+      
+      it "returns the results of the yields" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){false}.ordered
+          expect.advance_if_looking_at(:sep){true}.ordered
+          expect.advance_if_looking_at(:sep){false}.ordered
+        end
+        stub(subject).advance_if_looking_at!
+        yield_vals = [:foo, :bar]
+        subject.separated_list(:sep, :term){yield_vals.pop}.should == [:bar, :foo]
+      end
+      
+      it "advances over the terminator before returning" do
+        mock(subject) do |expect|
+          expect.looking_at?(:term){true}
+          expect.advance_if_looking_at!(:term){true}
+        end
+        subject.separated_list(:sep, :term)
+      end
+      
     end
     
     describe "#extend_with_infixes" do
@@ -240,28 +319,86 @@ describe Radish::StatementParser do
   end
   
   describe "#initialize" do
-    it "creates a new scope"
+    it "creates a new scope" do
+      subject.scope.should_not be_nil
+    end
   end
   
   describe "#parse_statement" do
-    it "parses a statement"
+    it "calls statement and returns the result" do
+      mock(subject).statement{:some_statement}
+      stub(subject).advance_if_looking_at!
+      subject.parse_statement.should == :some_statement
+    end
+    
+    it "expects to find end of input after the statement" do
+      stub(subject).statement
+      mock(subject).advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE
+      subject.parse_statement
+    end
   end
   
   describe "#parse" do
-    it "parses a file consisting of a sequence of statements."
+    it "parses statements up to the end of input" do
+      mock(subject).statements(Radish::Grammar::END_TOKEN_TYPE){[:stmt1, :stmt2]}
+      subject.parse.should == [:stmt1, :stmt2]
+    end
   end
   
   describe "#statement" do
-    it "parses a statement"
-    it "delegates to expression_statement if not looking at a true statement"
+    it "parses a statement and reserves the statement keyword" do
+      mock(mock_token = Object.new) do |expect|
+        expect.respond_to?(:stmt){true}
+        expect.stmt{:parsed_statement}
+      end
+      mock(subject) do |expect|
+        expect.next_token{mock_token}.times(2)
+        expect.scope.mock!.reserve(mock_token)
+        expect.take_token{mock_token}
+      end
+      subject.statement.should == :parsed_statement
+    end
+    
+    it "delegates to expression_statement if not looking at a true statement" do
+      mock(subject).next_token.mock!.respond_to?(:stmt){false}
+      mock(subject).expression_statement{:parsed_expression}
+      subject.statement.should == :parsed_expression
+    end
   end
   
   describe "#expression_statement" do
-    it "parses an expression as a statement"
+    it "parses an expression and returns it" do
+      mock(subject).expression(0){:some_expression}
+      stub(subject).advance_if_looking_at!
+      subject.expression_statement(:term).should == :some_expression
+    end
+    
+    it "expects to find the supplied terminator after the expression" do
+      stub(subject).expression
+      mock(subject).advance_if_looking_at! :term
+      subject.expression_statement(:term)
+    end
+    
+    it "does not look for a statement terminator if one is not passed" do
+      stub(subject).expression
+      dont_allow(subject).advance_if_looking_at!
+      subject.expression_statement
+    end
   end
   
   describe "#statements" do
-    it "parses a series of statements, up to a terminator"
+    it "parses a list statements, up to a terminator" do
+      yield_vals = [:stmt1, :stmt2]
+      mock(subject) do |expect|
+        expect.looking_at?(:term){false}.ordered
+        expect.statement{yield_vals.shift}.ordered
+        expect.looking_at?(:term){false}.ordered
+        expect.statement{yield_vals.shift}.ordered
+        expect.looking_at?(:term){true}.ordered
+      end
+      stub(subject).advance_if_looking_at!
+      subject.statements(:term).should == [:stmt1, :stmt2]
+    end
   end
   
 end

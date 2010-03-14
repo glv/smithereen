@@ -1,5 +1,6 @@
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/returning'
+require 'radish/scoping'
 require 'radish/token'
 
 module Radish
@@ -66,7 +67,7 @@ module Radish
 
     def separated_list(separator, terminator, options={})
       result = []
-      until looking_at?(terminator)
+      unless looking_at?(terminator)
         loop do
           result << yield
           advance_if_looking_at separator or break
@@ -97,6 +98,8 @@ module Radish
   end
   
   class StatementParser < Parser
+    include Radish::Scoping
+
     def initialize(grammar, source_lexer)
       super
       new_scope

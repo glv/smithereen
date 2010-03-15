@@ -73,7 +73,7 @@ specs:
     version: 2.0.0.beta.3
 - activesupport: 
     version: 3.0.0.beta
-hash: 62569cb63f07e75a4eb7609249a865e848eb93c5
+hash: 5b7407e42db44c67939a783456a0df5f6f9bfd00
 sources: 
 - Rubygems: 
     uri: http://gemcutter.org

@@ -9,7 +9,7 @@ group :test do
   gem 'rake',        '>= 0.8.7'
   gem 'rcov',        '>= 0.9.8'
   gem 'rr',          '>= 0.10.10'
-  gem 'rspec',       '>= 2.0.0.a7'
+  gem 'rspec',       '>= 2.0.0.a9'
 end
 
 group :release do

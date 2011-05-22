@@ -1,6 +1,6 @@
 require 'active_support/core_ext/module/delegation'
 
-module Radish
+module Smithereen
   module Scoping
 
     class Scope

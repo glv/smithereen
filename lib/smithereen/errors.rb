@@ -1,4 +1,4 @@
-module Radish
+module Smithereen
   class GrammarError < Exception
   end
   

@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/errors'
+require 'smithereen/errors'
 
-describe Radish::ParseError do  
+describe Smithereen::ParseError do  
   describe "#initialize" do
     it "passes the message to super and stores the token" do
-      error = Radish::ParseError.new("foo", :bar)
+      error = Smithereen::ParseError.new("foo", :bar)
       error.message.should == "foo: #{:bar}"
     end
   end

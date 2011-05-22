@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'active_support/core_ext/object/returning'
-require 'radish'
+require 'smithereen'
 
-module RadishSamples
-  class CalculatorLexer < Radish::Lexer
+module SmithereenSamples
+  class CalculatorLexer < Smithereen::Lexer
     def produce_next_token  
       return nil if i >= length
 
@@ -25,7 +25,7 @@ module RadishSamples
     end
   end
   
-  class CalculatorGrammar < Radish::Grammar
+  class CalculatorGrammar < Smithereen::Grammar
     
     deftoken :integer, 1000 do
       def value
@@ -66,7 +66,7 @@ module RadishSamples
 
   end
 
-  class Calculator < Radish::Parser
+  class Calculator < Smithereen::Parser
     def initialize(s)
       super(CalculatorGrammar.new, CalculatorLexer.new(s))
     end    

@@ -1,17 +1,17 @@
-require 'radish'
+require 'smithereen'
 require 'active_support/core_ext/module/delegation'
 
-module Radish::TokenInstanceMethods
+module Smithereen::TokenInstanceMethods
   # TODO: Build a better way to inject such methods into TIM.
   delegate :scope, :to => :parser
 end
 
-module Radish::TokenClassMethods
+module Smithereen::TokenClassMethods
   # TODO: Build a better way to inject such methods into TCM.
 end
 
-module RadishSamples
-  class SimplifiedJavaScriptGrammar < Radish::StatementGrammar
+module SmithereenSamples
+  class SimplifiedJavaScriptGrammar < Smithereen::StatementGrammar
     
     ASSIGNABLE_TYPES = [
       :name,      # a()
@@ -235,7 +235,7 @@ module RadishSamples
 
   end
   
-  class SimplifiedJavaScriptParser < Radish::StatementParser
+  class SimplifiedJavaScriptParser < Smithereen::StatementParser
 
     def expression_statement
       super(:';')

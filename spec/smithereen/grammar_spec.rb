@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/parser'
+require 'smithereen/parser'
 
-describe Radish::Grammar do
-  Grammar = Radish::Grammar
+describe Smithereen::Grammar do
+  Grammar = Smithereen::Grammar
   
   before do
     Grammar.symbol_table.clear
@@ -32,8 +32,8 @@ describe Radish::Grammar do
       end
       
       it "raises an error if no module is found" do
-        token = Radish::LexerToken.new(:other_type, '').extend Radish::TokenInstanceMethods
-        lambda{subject.send(:module_for_token, token)}.should raise_error(Radish::ParseError)
+        token = Smithereen::LexerToken.new(:other_type, '').extend Smithereen::TokenInstanceMethods
+        lambda{subject.send(:module_for_token, token)}.should raise_error(Smithereen::ParseError)
       end
     end
     
@@ -98,7 +98,7 @@ describe Radish::Grammar do
       it "includes TokenInstanceMethods into that module" do
         Grammar.deftoken(:foo, 0)
         m = Grammar.symbol_table[:foo]
-        m.included_modules.should =~ [Radish::TokenInstanceMethods]
+        m.included_modules.should =~ [Smithereen::TokenInstanceMethods]
       end
     
       it "defines #type to return the supplied type value" do
@@ -221,7 +221,7 @@ describe Radish::Grammar do
       end
       
       it "raises an error if an invalid :assoc option is passed" do
-        lambda{subject.infix(:foo, 0, :assoc => :bar)}.should raise_error(Radish::GrammarError)
+        lambda{subject.infix(:foo, 0, :assoc => :bar)}.should raise_error(Smithereen::GrammarError)
       end
       
       it "uses the passed lbp as the rbp if :assoc is not supplied" do
@@ -305,8 +305,8 @@ describe Radish::Grammar do
   
 end
 
-describe Radish::StatementGrammar do
-  StatementGrammar = Radish::StatementGrammar
+describe Smithereen::StatementGrammar do
+  StatementGrammar = Smithereen::StatementGrammar
   
   subject {StatementGrammar}
   

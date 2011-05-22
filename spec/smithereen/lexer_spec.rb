@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/lexer'
+require 'smithereen/lexer'
 
-describe Radish::Lexer do
-  subject { Radish::Lexer.new("foo") }
+describe Smithereen::Lexer do
+  subject { Smithereen::Lexer.new("foo") }
   
   describe "newly created" do
     it "stores the source stream as @s" do

@@ -1,6 +1,6 @@
-# radish
+# smithereen
 
-Radish is a library for building Top-Down Operator Precedence parsers.
+Smithereen is a library for building Top-Down Operator Precedence parsers.
 
 To learn more about TDOP parsing, see
 [Doug Crockford's chapter][crockford] in the book
@@ -71,7 +71,7 @@ distinction between expression- and statement-oriented languages.
 
 ## Design
 
-Radish has one distinctive design characteristic, the full implications
+Smithereen has one distinctive design characteristic, the full implications
 of which are still unclear.  It may have to be changed if it proves
 to have too great a performance impact.
 
@@ -87,7 +87,7 @@ solution that nicely demonstrates part of Crockford's point about
 dynamic languages' natural affinity for TDOP.
 
 It seemed to me that the best way to deal with this in Ruby was for
-the parser to extend tokens with modules.  So a Radish parser's
+the parser to extend tokens with modules.  So a Smithereen parser's
 symbol table contains a module for each token type, and the parser
 calls `token.extend(token_module)` as each token is received from
 the lexer.

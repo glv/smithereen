@@ -1,5 +1,5 @@
 Feature: JavaScript Parser
-  In order to demonstrate Radish
+  In order to demonstrate Smithereen
   As a programmer who sometimes makes weird mistakes 
   I want Simplified JavaScript Parser to have good syntax error messages
   

@@ -15,7 +15,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../lib')
 
-require 'radish'
+require 'smithereen'
 
 def in_editor?
   ENV.has_key?('TM_MODE') || ENV.has_key?('EMACS') || ENV.has_key?('VIM')
@@ -33,5 +33,5 @@ Rspec.configure do |c|
   elsif ENV['RSPEC_FORMATTER']
     c.formatter = ENV['RSPEC_FORMATTER']
   end
-  c.include(CustomRadishMatchers)
+  c.include(CustomSmithereenMatchers)
 end

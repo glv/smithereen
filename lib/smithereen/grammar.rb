@@ -1,7 +1,7 @@
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/object/returning'
 
-module Radish
+module Smithereen
   class Grammar
     END_TOKEN_TYPE = :"(end)"
     
@@ -39,8 +39,8 @@ module Radish
     
     def self.new_token_module(type, lbp)
       tok_module = Module.new do
-        extend Radish::TokenClassMethods
-        include Radish::TokenInstanceMethods
+        extend Smithereen::TokenClassMethods
+        include Smithereen::TokenInstanceMethods
         mattr_accessor :lbp
         mattr_accessor :type
       end
@@ -79,7 +79,7 @@ module Radish
 
     def self.infix(type, lbp, options={:assoc => :left}, &infix_blk)
       unless [:left, :right].include?(options[:assoc])
-        raise Radish::GrammarError, "Invalid :assoc option: #{options[:assoc]}"
+        raise Smithereen::GrammarError, "Invalid :assoc option: #{options[:assoc]}"
       end
       # TODO: This was broken, yet all the scenarios passed.  Clearly it's not
       #       being tested.
@@ -108,7 +108,7 @@ module Radish
   
   class StatementGrammar < Grammar
     def self.new_token_module(type, lbp)
-      returning(super) {|mod| mod.extend Radish::StatementTokenClassMethods}
+      returning(super) {|mod| mod.extend Smithereen::StatementTokenClassMethods}
     end
 
     def self.stmt(type, &stmt_blk)

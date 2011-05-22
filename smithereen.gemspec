@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{radish}
+  s.name = %q{smithereen}
   s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -32,24 +32,24 @@ Gem::Specification.new do |s|
      "features/step_definitions/calculator_steps.rb",
      "features/step_definitions/javascript_parser_steps.rb",
      "features/support/env.rb",
-     "lib/radish.rb",
-     "lib/radish/errors.rb",
-     "lib/radish/grammar.rb",
-     "lib/radish/lexer.rb",
-     "lib/radish/lexer_token.rb",
-     "lib/radish/parser.rb",
-     "lib/radish/scoping.rb",
-     "lib/radish/token.rb",
-     "radish.gemspec",
+     "lib/smithereen.rb",
+     "lib/smithereen/errors.rb",
+     "lib/smithereen/grammar.rb",
+     "lib/smithereen/lexer.rb",
+     "lib/smithereen/lexer_token.rb",
+     "lib/smithereen/parser.rb",
+     "lib/smithereen/scoping.rb",
+     "lib/smithereen/token.rb",
+     "smithereen.gemspec",
      "samples/calculator.rb",
      "samples/simplified_javascript/javascript_lexer.rb",
      "samples/simplified_javascript/javascript_parser.rb",
-     "spec/radish/errors_spec.rb",
-     "spec/radish/grammar_spec.rb",
-     "spec/radish/lexer_spec.rb",
-     "spec/radish/parser_spec.rb",
-     "spec/radish/scoping_spec.rb",
-     "spec/radish/token_spec.rb",
+     "spec/smithereen/errors_spec.rb",
+     "spec/smithereen/grammar_spec.rb",
+     "spec/smithereen/lexer_spec.rb",
+     "spec/smithereen/parser_spec.rb",
+     "spec/smithereen/scoping_spec.rb",
+     "spec/smithereen/token_spec.rb",
      "spec/spec_helper.rb",
      "spec/support/be_token.rb",
      "specs.watchr",
@@ -77,18 +77,18 @@ Gem::Specification.new do |s|
      "vendor/cache/treetop-1.4.4.gem",
      "vendor/cache/tzinfo-0.3.16.gem"
   ]
-  s.homepage = %q{http://github.com/glv/radish}
+  s.homepage = %q{http://github.com/glv/smithereen}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{A library for building parsers using top-down operator precedence}
   s.test_files = [
-    "spec/radish/errors_spec.rb",
-     "spec/radish/grammar_spec.rb",
-     "spec/radish/lexer_spec.rb",
-     "spec/radish/parser_spec.rb",
-     "spec/radish/scoping_spec.rb",
-     "spec/radish/token_spec.rb",
+    "spec/smithereen/errors_spec.rb",
+     "spec/smithereen/grammar_spec.rb",
+     "spec/smithereen/lexer_spec.rb",
+     "spec/smithereen/parser_spec.rb",
+     "spec/smithereen/scoping_spec.rb",
+     "spec/smithereen/token_spec.rb",
      "spec/spec_helper.rb",
      "spec/support/be_token.rb"
   ]

@@ -1,4 +1,4 @@
-module CustomRadishMatchers
+module CustomSmithereenMatchers
   class BeLexerToken
     def initialize(type, text, from, to)
       @type, @text, @from, @to = type, text, from, to
@@ -11,10 +11,10 @@ module CustomRadishMatchers
       (@to   ? token.to   == @to   : true)
     end
     def failure_message_for_should
-      "expected #{@token} to be #{Radish::LexerToken.new(@type, @text, @from, @to)}"
+      "expected #{@token} to be #{Smithereen::LexerToken.new(@type, @text, @from, @to)}"
     end
     def failure_message_for_should_not
-      "expected #{@token} not to be #{Radish::LexerToken.new(@type, @text, @from, @to)}"
+      "expected #{@token} not to be #{Smithereen::LexerToken.new(@type, @text, @from, @to)}"
     end
   end
   def be_lexer_token(type, text=nil, from=nil, to=nil)

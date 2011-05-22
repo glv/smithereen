@@ -20,11 +20,11 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "radish"
+    gem.name = "smithereen"
     gem.summary = %Q{A library for building parsers using top-down operator precedence}
     gem.description = %Q{A library for building parsers using top-down operator precedence}
     gem.email = "glv@vanderburg.org"
-    gem.homepage = "http://github.com/glv/radish"
+    gem.homepage = "http://github.com/glv/smithereen"
     gem.authors = ["Glenn Vanderburg"]
     
     gem.add_runtime_dependency     "activesupport", ">= 3.0.0.beta"
@@ -97,7 +97,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "radish #{version}"
+  rdoc.title = "smithereen #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/token'
-require 'radish/errors'
+require 'smithereen/token'
+require 'smithereen/errors'
 
-describe Radish::TokenClassMethods do
-  subject { Class.new.extend Radish::TokenClassMethods }
+describe Smithereen::TokenClassMethods do
+  subject { Class.new.extend Smithereen::TokenClassMethods }
   
   describe "#defblock" do
     it "defines the requested instance method with the supplied block" do
@@ -56,20 +56,20 @@ describe Radish::TokenClassMethods do
   end
 end
 
-describe Radish::TokenInstanceMethods do
-  subject { Radish::LexerToken.new(:foo, 'bar').extend Radish::TokenInstanceMethods }
+describe Smithereen::TokenInstanceMethods do
+  subject { Smithereen::LexerToken.new(:foo, 'bar').extend Smithereen::TokenInstanceMethods }
   
   describe "#prefix" do
     it "complains if called" do
-      lambda{subject.prefix}.should raise_error(Radish::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
-      operator_token = Radish::LexerToken.new(:+, '+').extend Radish::TokenInstanceMethods
-      lambda{operator_token.prefix}.should raise_error(Radish::ParseError, "Unexpected '+': #{operator_token}")
+      lambda{subject.prefix}.should raise_error(Smithereen::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
+      operator_token = Smithereen::LexerToken.new(:+, '+').extend Smithereen::TokenInstanceMethods
+      lambda{operator_token.prefix}.should raise_error(Smithereen::ParseError, "Unexpected '+': #{operator_token}")
     end
   end
 
   describe "#infix" do
     it "complains if called" do
-      lambda{subject.infix(1)}.should raise_error(Radish::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
+      lambda{subject.infix(1)}.should raise_error(Smithereen::ParseError, "Unexpected #{subject.type} (#{subject.text}): #{subject}")
     end
   end
   
@@ -120,22 +120,22 @@ describe Radish::TokenInstanceMethods do
   
   describe "#to_msg" do
     it "returns just the token text if the type and text are the same" do
-      tok = Radish::LexerToken.new(:+, '+').extend Radish::TokenInstanceMethods
+      tok = Smithereen::LexerToken.new(:+, '+').extend Smithereen::TokenInstanceMethods
       tok.to_msg.should == "'+'"
     end
 
     it "returns the token type and text if the type and text are different" do
-      tok = Radish::LexerToken.new(:integer, '42').extend Radish::TokenInstanceMethods
+      tok = Smithereen::LexerToken.new(:integer, '42').extend Smithereen::TokenInstanceMethods
       tok.to_msg.should == "integer (42)"
     end
   end
 end
 
-describe Radish::StatementTokenClassMethods do
+describe Smithereen::StatementTokenClassMethods do
   subject do
     Class.new do
-      extend Radish::TokenClassMethods
-      extend Radish::StatementTokenClassMethods 
+      extend Smithereen::TokenClassMethods
+      extend Smithereen::StatementTokenClassMethods 
     end
   end
   

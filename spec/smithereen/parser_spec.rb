@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/parser'
+require 'smithereen/parser'
 
-describe Radish::Parser do
-  Parser = Radish::Parser
-  class MockGrammar < Radish::Grammar; end
+describe Smithereen::Parser do
+  Parser = Smithereen::Parser
+  class MockGrammar < Smithereen::Grammar; end
   
   describe "instance methods" do
     subject do
@@ -51,7 +51,7 @@ describe Radish::Parser do
       it "advances past the (end) token after parsing the expression" do
         mock(subject) do |expect|
           expect.expression.ordered { :some_result }
-          expect.advance_if_looking_at!(Radish::Grammar::END_TOKEN_TYPE).ordered
+          expect.advance_if_looking_at!(Smithereen::Grammar::END_TOKEN_TYPE).ordered
         end
         subject.parse
       end
@@ -235,13 +235,13 @@ describe Radish::Parser do
       end
          
       it "raises an error if the next token does not have the expected type" do
-        other_token = Radish::LexerToken.new(:other_type, 'ot').extend Radish::TokenInstanceMethods
+        other_token = Smithereen::LexerToken.new(:other_type, 'ot').extend Smithereen::TokenInstanceMethods
         mock(subject) do |expect|
           expect.advance_if_looking_at(:some_type){nil}
           expect.next_token{other_token}.times(any_times)
           expect.symbol_table.mock![:some_type].mock!.to_msg{'some_type'}
         end
-        lambda{subject.advance_if_looking_at!(:some_type)}.should raise_error(Radish::ParseError, "Unexpected other_type (ot); expected some_type: #{other_token}")
+        lambda{subject.advance_if_looking_at!(:some_type)}.should raise_error(Smithereen::ParseError, "Unexpected other_type (ot); expected some_type: #{other_token}")
       end
     end
     
@@ -262,7 +262,7 @@ describe Radish::Parser do
       end
       
       it "returns the (end) token (symbolized) if @next_token is nil and the lexer is empty" do
-        end_tok = Radish::LexerToken.new(Radish::Grammar::END_TOKEN_TYPE, '')
+        end_tok = Smithereen::LexerToken.new(Smithereen::Grammar::END_TOKEN_TYPE, '')
         mock(subject) do |expect|
           expect.lexer.mock!.take_token{nil}
           expect.symbolize(end_tok){:symbolized_token}
@@ -296,7 +296,7 @@ describe Radish::Parser do
     it "reports 'Unexpected end of input' when prefix is called" do
       lexer = mock!.take_token{nil}.times(2).subject
       parser = Class.new(Parser).new(MockGrammar.new, lexer)
-      lambda{parser.send(:take_token).prefix}.should raise_error(Radish::ParseError, "Unexpected end of input: #{parser.send(:take_token)}")
+      lambda{parser.send(:take_token).prefix}.should raise_error(Smithereen::ParseError, "Unexpected end of input: #{parser.send(:take_token)}")
     end
     
     describe "#to_msg" do
@@ -310,9 +310,9 @@ describe Radish::Parser do
 
 end
 
-describe Radish::StatementParser do
-  StatementParser = Radish::StatementParser
-  class MockGrammar < Radish::Grammar; end
+describe Smithereen::StatementParser do
+  StatementParser = Smithereen::StatementParser
+  class MockGrammar < Smithereen::Grammar; end
   
   subject do
     StatementParser.new(MockGrammar.new, :foo) 
@@ -333,14 +333,14 @@ describe Radish::StatementParser do
     
     it "expects to find end of input after the statement" do
       stub(subject).statement
-      mock(subject).advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE
+      mock(subject).advance_if_looking_at! Smithereen::Grammar::END_TOKEN_TYPE
       subject.parse_statement
     end
   end
   
   describe "#parse" do
     it "parses statements up to the end of input" do
-      mock(subject).statements(Radish::Grammar::END_TOKEN_TYPE){[:stmt1, :stmt2]}
+      mock(subject).statements(Smithereen::Grammar::END_TOKEN_TYPE){[:stmt1, :stmt2]}
       subject.parse.should == [:stmt1, :stmt2]
     end
   end

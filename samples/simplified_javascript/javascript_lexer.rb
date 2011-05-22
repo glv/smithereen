@@ -1,7 +1,7 @@
-require 'radish'
+require 'smithereen'
 
-module RadishSamples
-  class SimplifiedJavaScriptLexer < Radish::Lexer
+module SmithereenSamples
+  class SimplifiedJavaScriptLexer < Smithereen::Lexer
     LOWER = ?a .. ?z
     UPPER = ?A .. ?Z
     DIGIT = ?0 .. ?9

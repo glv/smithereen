@@ -1,7 +1,7 @@
 require 'active_support/core_ext/module/delegation'
-require 'radish/errors'
+require 'smithereen/errors'
 
-module Radish
+module Smithereen
   module TokenClassMethods
     def prefix(&blk)
       defblock :prefix, &blk
@@ -46,21 +46,21 @@ module Radish
     end
     
     def prefix
-      raise ::Radish::ParseError.new("Unexpected #{to_msg}", self)
+      raise ::Smithereen::ParseError.new("Unexpected #{to_msg}", self)
     end
 
     def infix(left)
-      raise ::Radish::ParseError.new("Unexpected #{to_msg}", self)
+      raise ::Smithereen::ParseError.new("Unexpected #{to_msg}", self)
     end
     
     def exception(message="Parse error")
-      ::Radish::ParseError.new(message, self)
+      ::Smithereen::ParseError.new(message, self)
     end
   end
   
   module StatementTokenClassMethods
     def stmt(&blk)
-      raise ::Radish::GrammarError, "stmt blocks must not have positive arity" unless blk.arity <= 0
+      raise ::Smithereen::GrammarError, "stmt blocks must not have positive arity" unless blk.arity <= 0
       defblock :stmt, &blk
       # TODO: do I need to add some explicit indicator that this module is a
       #       statement?  For now I'm using respond_to?(:stmt).  But for prefix

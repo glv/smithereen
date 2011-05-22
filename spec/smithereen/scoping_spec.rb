@@ -1,10 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'radish/scoping'
-require 'radish/errors'
+require 'smithereen/scoping'
+require 'smithereen/errors'
 
-describe Radish::Scoping do
-  subject { Object.new.extend Radish::Scoping }
+describe Smithereen::Scoping do
+  subject { Object.new.extend Smithereen::Scoping }
   
   describe "#new_scope" do
     it "sets a new scope and sets its parent to the old scope" do
@@ -15,8 +15,8 @@ describe Radish::Scoping do
   end
 end
 
-describe Radish::Scoping::Scope do
-  Scope = Radish::Scoping::Scope
+describe Smithereen::Scoping::Scope do
+  Scope = Smithereen::Scoping::Scope
   
   describe "#initialize" do
     it "stores the supplied parser as #parser" do
@@ -42,17 +42,17 @@ describe Radish::Scoping::Scope do
     end
     
     it "raises 'Already defined' if the name is found but not reserved" do
-      tok = Radish::LexerToken.new(:some_type, 'foo').extend Radish::TokenInstanceMethods
+      tok = Smithereen::LexerToken.new(:some_type, 'foo').extend Smithereen::TokenInstanceMethods
       mock(tok).reserved{false}
       subject.defs[:foo] = tok
-      lambda{subject.define tok}.should raise_error(Radish::ParseError, "Already defined: #{tok}")
+      lambda{subject.define tok}.should raise_error(Smithereen::ParseError, "Already defined: #{tok}")
     end
     
     it "raises 'Already reserved' if the name has been reserved" do
-      tok = Radish::LexerToken.new(:some_type, 'foo').extend Radish::TokenInstanceMethods
+      tok = Smithereen::LexerToken.new(:some_type, 'foo').extend Smithereen::TokenInstanceMethods
       mock(tok).reserved{true}
       subject.defs[:foo] = tok
-      lambda{subject.define tok}.should raise_error(Radish::ParseError, "Already reserved: #{tok}")
+      lambda{subject.define tok}.should raise_error(Smithereen::ParseError, "Already reserved: #{tok}")
     end
   end
   
@@ -99,7 +99,7 @@ describe Radish::Scoping::Scope do
     subject { Scope.new(nil, nil) }
     
     it "returns immediately if the token's type is not :name" do
-      tok = Radish::LexerToken.new(:string, 'foo')
+      tok = Smithereen::LexerToken.new(:string, 'foo')
       dont_allow(tok).reserved
       dont_allow(subject) do |prevent|
         prevent.defs
@@ -109,7 +109,7 @@ describe Radish::Scoping::Scope do
     end
     
     it "returns immediately if the name.reserved" do
-      tok = Radish::LexerToken.new(:name, 'foo')
+      tok = Smithereen::LexerToken.new(:name, 'foo')
       mock(tok).reserved{true}
       dont_allow(subject) do |prevent|
         prevent.defs
@@ -119,7 +119,7 @@ describe Radish::Scoping::Scope do
     end
     
     it "returns immediately if the name has been reserved locally" do
-      tok = Radish::LexerToken.new(:name, 'foo')
+      tok = Smithereen::LexerToken.new(:name, 'foo')
       mock(tok).reserved{false}
       subject.defs[:foo] = mock!.reserved{true}.subject
       dont_allow(subject).store
@@ -127,15 +127,15 @@ describe Radish::Scoping::Scope do
     end
     
     it "raises an error if the name has been defined but not reserved locally" do
-      tok = Radish::LexerToken.new(:name, 'foo').extend Radish::TokenInstanceMethods
+      tok = Smithereen::LexerToken.new(:name, 'foo').extend Smithereen::TokenInstanceMethods
       mock(tok).reserved{false}
       subject.defs[:foo] = mock!.reserved{false}.subject
       dont_allow(subject).store
-      lambda{subject.reserve(tok)}.should raise_error(Radish::ParseError, "Already defined: #{tok}")
+      lambda{subject.reserve(tok)}.should raise_error(Smithereen::ParseError, "Already defined: #{tok}")
     end
     
     it "stores the name as reserved if it hasn't been defined or reserved locally" do
-      tok = Radish::LexerToken.new(:name, 'foo')
+      tok = Smithereen::LexerToken.new(:name, 'foo')
       mock(tok).reserved{false}
       mock(subject).store(tok, true){:some_module}
       subject.reserve(tok).should == :some_module
@@ -154,7 +154,7 @@ describe Radish::Scoping::Scope do
     subject { Scope.new(Object.new, nil) }
     
     it "creates a new token module, returns it, and stores it as a local define" do
-      tok = Radish::LexerToken.new(:name, 'some_name')
+      tok = Smithereen::LexerToken.new(:name, 'some_name')
       mock(subject).new_binding_module(false){:mock_module}
       subject.send(:store, tok, false).should == :mock_module
       subject.defs[:some_name].should == :mock_module
@@ -162,11 +162,11 @@ describe Radish::Scoping::Scope do
   end
   
   describe "#new_binding_module" do
-    class MockGrammar < Radish::Grammar; end
-    subject { Scope.new(Radish::Parser.new(MockGrammar.new, nil), nil) }
+    class MockGrammar < Smithereen::Grammar; end
+    subject { Scope.new(Smithereen::Parser.new(MockGrammar.new, nil), nil) }
     
     it "returns a new token module (with type :name and 0 binding power)" do
-      tok = Radish::LexerToken.new(:name, 'some_name')
+      tok = Smithereen::LexerToken.new(:name, 'some_name')
       stub(mock_module = Object.new) do |allow|
         allow.module_eval
         allow.reserved = false
@@ -178,7 +178,7 @@ describe Radish::Scoping::Scope do
     end
     
     it "defines :reserved and :scope as accessors on the module" do
-      tok = Radish::LexerToken.new(:name, 'some_name')
+      tok = Smithereen::LexerToken.new(:name, 'some_name')
       mock(mock_module = Module.new).dup{mock_module}
       stub(subject).symbol_table{ {:name => mock_module} }
       result_module = subject.send(:new_binding_module, :reserved_val)
@@ -188,7 +188,7 @@ describe Radish::Scoping::Scope do
     end
     
     it "sets 'module.reserved' based on the passed 'reserved' parameter" do
-      tok = Radish::LexerToken.new(:name, 'some_name')
+      tok = Smithereen::LexerToken.new(:name, 'some_name')
       mock(mock_module = Object.new).reserved = 'some_reserved_value'
       stub(mock_module) do |allow|
         allow.module_eval
@@ -200,7 +200,7 @@ describe Radish::Scoping::Scope do
     end        
     
     it "stores the scope object as the module's 'scope' value" do
-      tok = Radish::LexerToken.new(:name, 'some_name')
+      tok = Smithereen::LexerToken.new(:name, 'some_name')
       mock(mock_module = Object.new).scope = subject
       stub(mock_module) do |allow|
         allow.module_eval

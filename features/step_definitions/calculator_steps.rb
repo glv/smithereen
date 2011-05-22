@@ -1,6 +1,6 @@
 Given /^I have loaded the sample calculator parser$/ do
   require File.dirname(__FILE__) + '/../../samples/calculator'
-  @parser_class = RadishSamples::Calculator
+  @parser_class = SmithereenSamples::Calculator
 end
 
 Given /^I ask the calculator for the answer to "([^\"]*)"$/ do |input|
@@ -9,7 +9,7 @@ Given /^I ask the calculator for the answer to "([^\"]*)"$/ do |input|
   begin
     @result = @parser_class.new(calculator_input).parse
     @syntax_error = nil
-  rescue Radish::ParseError => e
+  rescue Smithereen::ParseError => e
     @result = nil
     @syntax_error = e
   end

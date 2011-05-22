@@ -1,6 +1,6 @@
-require 'radish/lexer_token'
+require 'smithereen/lexer_token'
 
-module Radish
+module Smithereen
   class Lexer
 
     protected

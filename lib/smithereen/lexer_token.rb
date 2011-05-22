@@ -1,5 +1,5 @@
-require 'radish/errors'
+require 'smithereen/errors'
 
-module Radish
+module Smithereen
   LexerToken = Struct.new(:type, :text, :from, :to)
 end

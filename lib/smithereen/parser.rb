@@ -1,9 +1,9 @@
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/object/returning'
-require 'radish/scoping'
-require 'radish/token'
+require 'smithereen/scoping'
+require 'smithereen/token'
 
-module Radish
+module Smithereen
   class Parser
     
     attr_reader :grammar
@@ -98,7 +98,7 @@ module Radish
   end
   
   class StatementParser < Parser
-    include Radish::Scoping
+    include Smithereen::Scoping
 
     def initialize(grammar, source_lexer)
       super
@@ -106,7 +106,7 @@ module Radish
     end
 
     def parse_statement
-      returning(statement) { advance_if_looking_at! Radish::Grammar::END_TOKEN_TYPE }
+      returning(statement) { advance_if_looking_at! Smithereen::Grammar::END_TOKEN_TYPE }
     end
 
     def parse

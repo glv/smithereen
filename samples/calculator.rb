@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'active_support/core_ext/object/returning'
 require 'smithereen'
 
 module SmithereenSamples
@@ -58,7 +57,7 @@ module SmithereenSamples
   
     deftoken :'(', 0 do
       prefix do
-        returning(expression) { advance_if_looking_at! :')' }
+        expression.tap{ advance_if_looking_at! :')' }
       end
     end
   

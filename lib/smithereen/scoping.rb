@@ -73,7 +73,7 @@ module Smithereen
       end
       
       def new_binding_module(reserved)
-        returning symbol_table[:name].dup do |name_module|
+        symbol_table[:name].dup.tap do |name_module|
           name_module.module_eval do
             mattr_accessor :reserved
             mattr_accessor :scope

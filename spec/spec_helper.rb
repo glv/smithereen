@@ -1,14 +1,3 @@
-begin
-  # Try to require the preresolved locked set of gems.
-  require File.expand_path('../../.bundle/environment', __FILE__)
-rescue LoadError
-  # Fall back on doing an unlocked resolve at runtime.
-  puts "Something's wrong with bundle configuration.  Falling back to RubyGems."
-  require "rubygems"
-  require "bundler"
-  Bundler.setup
-end
-
 require 'rspec'
 
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
@@ -21,7 +10,7 @@ def in_editor?
   ENV.has_key?('TM_MODE') || ENV.has_key?('EMACS') || ENV.has_key?('VIM')
 end
 
-Rspec.configure do |c|
+RSpec.configure do |c|
   c.mock_framework = :rr
   c.filter_run :focused => true
   c.run_all_when_everything_filtered = true

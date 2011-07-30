@@ -1,5 +1,4 @@
 require 'active_support/core_ext/module/delegation'
-require 'active_support/core_ext/object/returning'
 require 'smithereen/scoping'
 require 'smithereen/token'
 
@@ -21,7 +20,7 @@ module Smithereen
     end
     
     def parse_expression
-      returning(expression) { advance_if_looking_at! Grammar::END_TOKEN_TYPE }
+      expression.tap{ advance_if_looking_at! Grammar::END_TOKEN_TYPE }
     end
     
     def parse
@@ -92,7 +91,7 @@ module Smithereen
     end
     
     def take_token
-      returning(next_token) { self.next_token = nil }
+      next_token.tap{ self.next_token = nil }
     end
     
   end
@@ -106,7 +105,7 @@ module Smithereen
     end
 
     def parse_statement
-      returning(statement) { advance_if_looking_at! Smithereen::Grammar::END_TOKEN_TYPE }
+      statement.tap{ advance_if_looking_at! Smithereen::Grammar::END_TOKEN_TYPE }
     end
 
     def parse
@@ -127,7 +126,7 @@ module Smithereen
     end
     
     def expression_statement(terminator=nil)
-      returning expression(0) do |expr|
+      expression(0).tap do |expr|
         # TODO: apparently only assignments and (for some reason) expressions
         #       starting with '(' are allowed as statements.  But for now that
         #       will mess up our testing.

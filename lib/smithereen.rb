@@ -1,5 +1,4 @@
 require 'active_support/core_ext/module/delegation'
-require 'active_support/core_ext/object/returning'
 require 'smithereen/errors'
 require 'smithereen/lexer_token'
 require 'smithereen/lexer'

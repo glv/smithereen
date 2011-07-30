@@ -1,5 +1,4 @@
 require 'active_support/core_ext/module/attribute_accessors'
-require 'active_support/core_ext/object/returning'
 
 module Smithereen
   class Grammar
@@ -13,7 +12,7 @@ module Smithereen
     end
     
     def symbolize(token)
-      returning token do
+      token.tap do
         token.extend(module_for_token(token))
         token.parser = parser
       end
@@ -62,7 +61,7 @@ module Smithereen
     end
     
     def self.symbol(type, bp=0, &prefix_blk)
-      returning deftoken(type, bp) do |tok_module|
+      deftoken(type, bp).tap do |tok_module|
         tok_module.prefix(&prefix_blk) if block_given?
       end
     end
@@ -86,7 +85,7 @@ module Smithereen
       rbp = (options[:assoc] == :left) ? lbp : lbp - 1
 
       infix_blk = lambda{|left| [type, left, expression(rbp)] } unless block_given?
-      returning deftoken(type, lbp) do |tok_module|
+      deftoken(type, lbp).tap do |tok_module|
         tok_module.infix &infix_blk
       end
     end
@@ -99,7 +98,7 @@ module Smithereen
           [type, expression(70)]
         end
       end
-      returning deftoken(type) do |tok_module|
+      deftoken(type).tap do |tok_module|
         tok_module.prefix &prefix_blk
       end
     end
@@ -108,7 +107,7 @@ module Smithereen
   
   class StatementGrammar < Grammar
     def self.new_token_module(type, lbp)
-      returning(super) {|mod| mod.extend Smithereen::StatementTokenClassMethods}
+      super.tap{|mod| mod.extend Smithereen::StatementTokenClassMethods}
     end
 
     def self.stmt(type, &stmt_blk)

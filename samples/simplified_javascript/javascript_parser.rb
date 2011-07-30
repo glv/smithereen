@@ -75,7 +75,7 @@ module SmithereenSamples
 
     # ---------------------------------------------------- compound expressions
     prefix :'(' do
-      returning(expression(0)) { advance_if_looking_at!(:')') }
+      expression(0).tap{ advance_if_looking_at!(:')') }
     end
 
     prefix :'[' do
@@ -154,7 +154,7 @@ module SmithereenSamples
     end
 
     infix :'[',   80 do |left|
-      returning([:lookup, left, expression(0)]) { advance_if_looking_at! :']' }
+      [:lookup, left, expression(0)].tap{ advance_if_looking_at! :']' }
     end
 
     CALLABLE_TYPES = [
@@ -175,7 +175,7 @@ module SmithereenSamples
     # -------------------------------------------------------------- statements
     stmt :'{' do
       new_scope
-      returning [:block, *statements(:'}')] do
+      [:block, *statements(:'}')].tap do
         scope.pop
       end
     end
@@ -213,7 +213,7 @@ module SmithereenSamples
     end
 
     stmt :return do
-      returning [:return] do |result|
+      [:return].tap do |result|
         result << expression(0) unless looking_at? :';'
         advance_if_looking_at! :';'
         raise next_token, "Unreachable statement" unless looking_at?(:'}')

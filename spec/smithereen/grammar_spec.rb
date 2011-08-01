@@ -249,7 +249,12 @@ describe Smithereen::Grammar do
       end
 
       it "registers the passed block as the module's infix method" do
-        token_module = subject.infix(:foo, 0){:some_result}
+        if RUBY_VERSION =~ /^1\.9\./
+          # What we have to do here for 1.9 isn't even valid syntax in 1.8.
+          eval %q{token_module = subject.infix(:foo, 0){|left=nil| :some_result}}, binding, __FILE__, __LINE__
+        else
+          token_module = subject.infix(:foo, 0){:some_result}
+        end
         token = Object.new
         token.extend(token_module)
         token.infix(1).should == :some_result

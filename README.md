@@ -1,4 +1,4 @@
-# smithereen
+# smithereen [![Build Status](https://secure.travis-ci.org/glv/smithereen.png)](http://travis-ci.org/glv/smithereen)
 
 Smithereen is a library for building Top-Down Operator Precedence parsers.
 
